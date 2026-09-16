@@ -4,15 +4,22 @@ export async function inspectPasskeyCapability() {
     credentialsApiAvailable: false,
     userVerifyingPlatformAuthenticatorAvailable: false,
     secureContext: false,
-    checkedAt: new Date().toISOString()
+    checkedAt: new Date().toISOString(),
+    externalActionAuthorized: false
   };
 
   try {
     // Check secure context
-    result.secureContext = typeof window !== 'undefined' && window.isSecureContext === true;
+    if (typeof globalThis !== 'undefined' && globalThis.isSecureContext !== undefined) {
+      result.secureContext = globalThis.isSecureContext === true;
+    } else if (typeof window !== 'undefined' && window.isSecureContext !== undefined) {
+      result.secureContext = window.isSecureContext === true;
+    }
 
     // Check PublicKeyCredential
-    if (typeof window !== 'undefined' && window.PublicKeyCredential) {
+    if (typeof globalThis !== 'undefined' && globalThis.PublicKeyCredential) {
+      result.webAuthnAvailable = true;
+    } else if (typeof window !== 'undefined' && window.PublicKeyCredential) {
       result.webAuthnAvailable = true;
     }
 
@@ -22,13 +29,15 @@ export async function inspectPasskeyCapability() {
     }
 
     // Check user-verifying platform authenticator
-    if (
-      typeof window !== 'undefined' &&
-      window.PublicKeyCredential &&
-      typeof window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function'
-    ) {
+    const platformAuthAvailCheck = 
+      (typeof globalThis !== 'undefined' && globalThis.PublicKeyCredential && typeof globalThis.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function') ||
+      (typeof window !== 'undefined' && window.PublicKeyCredential && typeof window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function');
+
+    if (platformAuthAvailCheck) {
       try {
-        const isAvailable = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        const checkFn = (typeof globalThis !== 'undefined' && globalThis.PublicKeyCredential && globalThis.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) ||
+                        (typeof window !== 'undefined' && window.PublicKeyCredential && window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable);
+        const isAvailable = await checkFn();
         result.userVerifyingPlatformAuthenticatorAvailable = isAvailable === true;
       } catch (e) {
         result.userVerifyingPlatformAuthenticatorAvailable = false;

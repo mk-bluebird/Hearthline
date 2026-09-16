@@ -1,7 +1,13 @@
 {
-  "name": "sandbox-workspace",
+  "name": "hearthline-starter",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
+  "description": "A local-first Hearthline demonstration for consent-aware adult connection.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",

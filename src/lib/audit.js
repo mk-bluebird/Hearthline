@@ -1,25 +1,24 @@
-const VALID_EVENT_TYPES = [
-  'PRIVACY_CHOICE_UPDATED',
-  'DRAFT_INVALIDATED',
-  'PACE_CHANGED',
-  'CONNECTION_PAUSED',
-  'CONNECTION_RESUMED',
-  'PASSKEY_CHECKED',
-  'ACTION_PAUSED',
-  'MEETING_PLANNING_OPENED',
+const VALID_EVENT_TYPES = Object.freeze([
+  'PRIVACY_CHOICES_REVIEWED',
+  'PRIVACY_SCOPE_UPDATED',
+  'UNSENT_DRAFT_INVALIDATED',
+  'PACE_UPDATED',
+  'CONNECTION_ACTIVITY_PAUSED',
+  'CONNECTION_ACTIVITY_RESUMED',
+  'PASSKEY_CAPABILITY_REVIEWED',
+  'MESSAGE_PREVIEW_PAUSED',
+  'OPTIONAL_MEETING_PLANNING_OPENED',
   'RECIPIENT_DISPLAY_NAME_UPDATED',
-  'CONSENT_REVOKED',
-  'CONSENT_GRANTED',
-  'LOW_ENERGY_TOGGLED',
-  'EXPORT_PREVIEWED',
-  'DATA_RESET'
-];
+  'LOCAL_DATA_RESET',
+  'LOCAL_EXPORT_PREVIEWED'
+]);
 
-const REJECTED_PAYLOAD_FIELDS = [
+const REJECTED_PAYLOAD_FIELDS = Object.freeze([
   'messageText',
   'draftText',
   'recipientName',
   'recipientDisplayName',
+  'recipientRef',
   'phoneNumber',
   'credentialMaterial',
   'recoveryContext',
@@ -28,47 +27,115 @@ const REJECTED_PAYLOAD_FIELDS = [
   'trustValue',
   'reputationValue',
   'profileText',
-  'rawBrowserPayload'
-];
+  'rawBrowserPayload',
+  'legalName',
+  'legalNameRef',
+  'recoveryStatus',
+  'recoveryHistory',
+  'recoveryStage',
+  'treatmentHistory',
+  'substanceUseHistory',
+  'diagnosis',
+  'healthStatus',
+  'healthContext',
+  'traumaHistory',
+  'ptsdStatus',
+  'trustScore',
+  'reputationScore',
+  'compatibilityScore',
+  'popularity',
+  'responseRate',
+  'responseLatency',
+  'socialGraph',
+  'criminalHistory',
+  'financialStatus',
+  'employmentStatus',
+  'housingStatus',
+  'lanternState',
+  'credentialId',
+  'privateKey',
+  'recoveryCode',
+  'recoveryShare',
+  'oauthAccessToken',
+  'oauthRefreshToken',
+  'attestationObject',
+  'biometricTemplate'
+]);
 
-const EVENT_TEMPLATES = {
-  'PRIVACY_CHOICE_UPDATED': 'You updated a privacy choice.',
-  'DRAFT_INVALIDATED': 'An unsent draft became unavailable under your current privacy choices.',
-  'PACE_CHANGED': 'You changed your pace.',
-  'CONNECTION_PAUSED': 'You paused connection activity.',
-  'CONNECTION_RESUMED': 'You resumed connection activity.',
-  'PASSKEY_CHECKED': 'You reviewed browser passkey capability.',
-  'ACTION_PAUSED': 'A message-preview action was briefly paused.',
-  'MEETING_PLANNING_OPENED': 'You opened optional meeting-planning tools.',
+const EVENT_TEMPLATES = Object.freeze({
+  'PRIVACY_CHOICES_REVIEWED': 'You reviewed privacy choices.',
+  'PRIVACY_SCOPE_UPDATED': 'You updated a privacy scope.',
+  'UNSENT_DRAFT_INVALIDATED': 'An unsent draft became unavailable under your current privacy choices.',
+  'PACE_UPDATED': 'You changed your pace.',
+  'CONNECTION_ACTIVITY_PAUSED': 'You paused connection activity.',
+  'CONNECTION_ACTIVITY_RESUMED': 'You resumed connection activity.',
+  'PASSKEY_CAPABILITY_REVIEWED': 'You reviewed browser passkey capability.',
+  'MESSAGE_PREVIEW_PAUSED': 'A message-preview action was briefly paused.',
+  'OPTIONAL_MEETING_PLANNING_OPENED': 'You opened optional meeting-planning tools.',
   'RECIPIENT_DISPLAY_NAME_UPDATED': 'You updated a recipient display name.',
-  'CONSENT_REVOKED': 'You revoked a sharing choice.',
-  'CONSENT_GRANTED': 'You granted a sharing choice.',
-  'LOW_ENERGY_TOGGLED': 'You changed low-energy mode.',
-  'EXPORT_PREVIEWED': 'You previewed a local data export.',
-  'DATA_RESET': 'You reset local demo data.'
-};
+  'LOCAL_DATA_RESET': 'You reset local demo data.',
+  'LOCAL_EXPORT_PREVIEWED': 'You previewed a local data export.'
+});
 
-export function createAuditEvent({ eventType, actorRole, occurredAt }) {
+function findForbiddenDataKeys(value, seen) {
+  if (value === null || typeof value !== 'object') {
+    return [];
+  }
+  if (!seen) {
+    seen = new WeakSet();
+  }
+  if (seen.has(value)) {
+    throw new TypeError('Circular reference detected');
+  }
+  seen.add(value);
+
+  const found = new Set();
+  const forbiddenSet = new Set(REJECTED_PAYLOAD_FIELDS);
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const nested = findForbiddenDataKeys(item, seen);
+      for (const key of nested) {
+        found.add(key);
+      }
+    }
+  } else {
+    for (const key of Object.keys(value)) {
+      if (forbiddenSet.has(key)) {
+        found.add(key);
+      }
+      const prop = value[key];
+      if (typeof prop === 'object' && prop !== null) {
+        const nested = findForbiddenDataKeys(prop, seen);
+        for (const k of nested) {
+          found.add(k);
+        }
+      }
+    }
+  }
+  return [...found];
+}
+
+export function createAuditEvent({ eventType, actorRole, occurredAt, userFacingMessage }) {
   if (!VALID_EVENT_TYPES.includes(eventType)) {
-    return { created: false, reason: 'Unknown event type.' };
+    throw new Error(`Unknown event type: ${eventType}`);
   }
 
   if (!actorRole || typeof actorRole !== 'string') {
-    return { created: false, reason: 'Actor role is required.' };
+    throw new Error('Actor role is required');
   }
 
-  // Check that no rejected payload fields are present
-  // (In this implementation, we only accept the three allowed params)
+  if (userFacingMessage !== undefined) {
+    throw new Error('Caller-provided message text is rejected. Use allowlisted templates only.');
+  }
 
   return {
-    created: true,
-    event: {
-      eventType,
-      actorRole,
-      occurredAt: occurredAt || new Date().toISOString(),
-      description: EVENT_TEMPLATES[eventType],
-      eventRef: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-    }
+    eventRef: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    eventType,
+    actorRole,
+    occurredAt: occurredAt || new Date().toISOString(),
+    userFacingMessage: EVENT_TEMPLATES[eventType],
+    externalActionAuthorized: false
   };
 }
 
@@ -76,4 +143,4 @@ export function getEventTemplate(eventType) {
   return EVENT_TEMPLATES[eventType] || 'An activity occurred.';
 }
 
-export { VALID_EVENT_TYPES };
+export { VALID_EVENT_TYPES, EVENT_TEMPLATES };
