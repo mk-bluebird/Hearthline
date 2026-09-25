@@ -1,0 +1,12 @@
+[package]
+name = "hearthline_object_bus"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+description = "Privacy-bounded typed object notices and scoped platform-interaction grants for Hearthline."
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
