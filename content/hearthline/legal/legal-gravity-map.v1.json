@@ -1,0 +1,93 @@
+{
+  "objectType": "LegalGravityMap",
+  "version": "v1",
+  "publishedAt": "2026-09-25T07:54:00Z",
+  "globalNonAdviceNotice": "LegalGravityMap provides general Hearthline feature-boundary information. It is not legal advice, does not evaluate individual facts, does not determine whether conduct is lawful, and does not create a record of a user's legal knowledge, intent, or acknowledgement. For advice about a specific situation, consult a qualified attorney licensed in the relevant jurisdiction.",
+  "tracking": {
+    "accountLinkedViewTracking": false,
+    "jurisdictionSelectionTracking": false,
+    "acknowledgementTracking": false,
+    "analyticsTracking": false,
+    "personLevelScoring": false
+  },
+  "entries": [
+    {
+      "jurisdictionCode": "US-AZ",
+      "displayName": "Arizona, United States",
+      "effectiveDate": "2026-09-25",
+      "reviewRequiredBy": "2027-03-25",
+      "nonAdviceNotice": "This Arizona entry provides general Hearthline feature-boundary information, not legal advice. It does not evaluate a particular plan, message, encounter, or person's intent. For advice about a specific situation, consult a qualified Arizona attorney.",
+      "featurePostures": [
+        {
+          "featureId": "general_adult_connection",
+          "status": "reviewed_available",
+          "plainLanguageBoundary": "Hearthline may support consensual, non-commercial adult friendship, dating, romance, conversation, and voluntary adult connection, subject to age assurance, privacy, accessibility, consent, safety, and ongoing legal review.",
+          "lastCounselReviewDate": "2026-09-25"
+        },
+        {
+          "featureId": "noncommercial_integrity",
+          "status": "reviewed_restricted",
+          "plainLanguageBoundary": "Hearthline may provide general information and non-commercial-boundary reminders. These tools do not decide whether a specific situation is lawful, commercial, consensual, or safe.",
+          "lastCounselReviewDate": "2026-09-25"
+        },
+        {
+          "featureId": "coarse_meeting_context",
+          "status": "reviewed_restricted",
+          "plainLanguageBoundary": "Hearthline may support user-declared broad regions, broad time context, and neutral or public venue categories. The platform does not use GPS, IP-derived location, home address, workplace address, live location, public availability maps, or precise-distance displays.",
+          "lastCounselReviewDate": "2026-09-25"
+        },
+        {
+          "featureId": "private_compatibility_discussion",
+          "status": "reviewed_restricted",
+          "plainLanguageBoundary": "Private adult compatibility discussion may be available only through explicit mutual opt-in, recipient-scoped access, clear withdrawal, limited retention, and exclusion from discovery, ranking, advertising, analytics, and model training.",
+          "lastCounselReviewDate": "2026-09-25"
+        },
+        {
+          "featureId": "meeting_plan",
+          "status": "reviewed_restricted",
+          "plainLanguageBoundary": "Meeting plans may support mutual scheduling, cancellation, public or neutral venue categories, independent-arrival preferences, transit-aware access, and accessible venue preferences. A plan does not require anyone to meet, travel, host, touch, disclose, or continue contact.",
+          "lastCounselReviewDate": "2026-09-25"
+        },
+        {
+          "featureId": "public_activity_invitation",
+          "status": "reviewed_available",
+          "plainLanguageBoundary": "Hearthline may support non-commercial invitations for public or virtual activities, including conversations, coffee, games, walks, community events, and accessible low-cost activities.",
+          "lastCounselReviewDate": "2026-09-25"
+        },
+        {
+          "featureId": "private_venue_discussion",
+          "status": "reviewed_restricted",
+          "plainLanguageBoundary": "Private-venue discussion may occur only in a mutual, revocable corridor and must not require home-address disclosure, payment, lodging exchange, transport exchange, gifts, work, debt relief, or intimacy. Early research flows should prioritize public or neutral planning.",
+          "lastCounselReviewDate": "2026-09-25"
+        },
+        {
+          "featureId": "financial_or_value_exchange",
+          "status": "not_available",
+          "plainLanguageBoundary": "Hearthline does not support rates, pricing, payments, deposits, tips, payment links, payment handles, crypto addresses, gifts conditioned on intimacy, housing, lodging, transportation, labor, employment, goods, services, debt relief, or other valuable consideration linked to sexual activity or intimate access.",
+          "lastCounselReviewDate": "2026-09-25"
+        }
+      ],
+      "officialSources": [
+        {
+          "label": "Arizona Legislature: ARS §13-3214",
+          "url": "https://www.azleg.gov/ars/13/03214.htm",
+          "sourceType": "statute"
+        },
+        {
+          "label": "Arizona Legislature: HB 2720 House Bill Summary",
+          "url": "https://www.azleg.gov/legtext/57leg/2R/summary/H.HB2720_012926_HOUSEENGROSSED.DOCX.htm",
+          "sourceType": "legislative_summary"
+        }
+      ],
+      "accessibility": {
+        "plainLanguageAvailable": true,
+        "keyboardNavigable": true,
+        "screenReaderStructured": true,
+        "printFriendly": true,
+        "reducedMotionCompatible": true,
+        "textResizeCompatible": true
+      }
+    }
+  ],
+  "externalActionAuthorized": false
+}
