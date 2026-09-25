@@ -1,0 +1,63 @@
+{
+  "objectType": "ArizonaComplianceCompass",
+  "version": "v1",
+  "jurisdiction": "AZ",
+  "language": "en",
+  "effectiveDate": "2026-09-25",
+  "reviewRequiredBy": "2027-03-25",
+  "readOnly": true,
+  "personalized": false,
+  "tracking": {
+    "accountLinkedViewTracking": false,
+    "acknowledgementTracking": false,
+    "analyticsTracking": false,
+    "userRiskScoring": false
+  },
+  "nonAdviceNotice": "This page provides general Hearthline platform information, not legal advice. It does not evaluate a specific situation. For advice about a specific matter, consult a qualified Arizona attorney.",
+  "plainLanguageSections": [
+    {
+      "id": "purpose",
+      "title": "What Hearthline supports",
+      "body": "Hearthline supports consensual, unpaid adult social connection, friendship, dating, romance, affection, adult conversation, and voluntary adult encounters."
+    },
+    {
+      "id": "commercial-boundary",
+      "title": "Arizona commercial-sex boundary",
+      "body": "Arizona law prohibits sexual conduct under a fee arrangement involving money or other valuable consideration. Hearthline does not support prices, rates, payment links, deposits, tips, payments, gifts conditioned on intimacy, debt relief, housing, lodging, transportation, work, goods, or services exchanged for sexual activity."
+    },
+    {
+      "id": "consent",
+      "title": "Consent remains current",
+      "body": "A profile, message, match, shared preference, meeting plan, charter, app state, or prior encounter is not consent to any future real-world activity. Each person can pause, change their mind, decline, or leave at any time."
+    },
+    {
+      "id": "logistics",
+      "title": "Practical plans stay separate",
+      "body": "Adults may discuss public venues, accessibility, transit, independent arrival, and low-cost activities. Hearthline does not connect rides, hosting, lodging, money, gifts, work, debt relief, or other valuable consideration to sexual access or intimacy."
+    },
+    {
+      "id": "limits",
+      "title": "What this page does not do",
+      "body": "This page does not give legal advice, decide whether a particular situation is lawful, assess anyone's intent, or create a record that you read or agreed to these statements."
+    }
+  ],
+  "officialSources": [
+    {
+      "label": "Arizona Legislature: HB 2720 House Bill Summary",
+      "url": "https://www.azleg.gov/legtext/57leg/2R/summary/H.HB2720_012926_HOUSEENGROSSED.DOCX.htm"
+    },
+    {
+      "label": "Arizona Legislature: ARS §13-3214",
+      "url": "https://www.azleg.gov/ars/13/03214.htm"
+    }
+  ],
+  "accessibility": {
+    "plainLanguageAvailable": true,
+    "keyboardNavigable": true,
+    "screenReaderStructured": true,
+    "printFriendly": true,
+    "reducedMotionCompatible": true,
+    "textResizeCompatible": true
+  },
+  "externalActionAuthorized": false
+}
