@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hearthline.example/schemas/governance/flag-feature-garden.schema.json",
+  "title": "FlagFeatureGarden",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "objectType",
+    "version",
+    "publishedAt",
+    "flags",
+    "tracking",
+    "externalActionAuthorized"
+  ],
+  "properties": {
+    "objectType": {
+      "type": "string",
+      "const": "FlagFeatureGarden"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tracking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flagViewTracking",
+        "flagSelectionTracking",
+        "behavioralTargeting",
+        "silentExperimentEnrollment"
+      ],
+      "properties": {
+        "flagViewTracking": {
+          "type": "boolean",
+          "const": false
+        },
+        "flagSelectionTracking": {
+          "type": "boolean",
+          "const": false
+        },
+        "behavioralTargeting": {
+          "type": "boolean",
+          "const": false
+        },
+        "silentExperimentEnrollment": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "flags": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/flag"
+      }
+    },
+    "externalActionAuthorized": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "flag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "category",
+        "purpose",
+        "scope",
+        "defaultState",
+        "userVisible",
+        "userExplanation",
+        "expiresAt",
+        "riskClass",
+        "dataImpact",
+        "accessibilityImpact",
+        "consentRequirement",
+        "reviewStatus",
+        "externalActionAuthorized"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{2,119}$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^v[0-9]+$"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "discovery",
+            "pacing",
+            "intimacy",
+            "compliance",
+            "accessibility",
+            "safety_boundary",
+            "research_limited",
+            "operational_emergency"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 24,
+          "maxLength": 1000
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "global",
+            "user_selected",
+            "explicit_research_cohort",
+            "emergency_service_boundary"
+          ]
+        },
+        "defaultState": {
+          "type": "boolean"
+        },
+        "userVisible": {
+          "type": "boolean"
+        },
+        "userExplanation": {
+          "type": "string",
+          "minLength": 24,
+          "maxLength": 1600
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "riskClass": {
+          "type": "string",
+          "enum": [
+            "low",
+            "moderate",
+            "high",
+            "prohibited"
+          ]
+        },
+        "dataImpact": {
+          "type": "string",
+          "enum": [
+            "none",
+            "local_only",
+            "purpose_limited",
+            "prohibited"
+          ]
+        },
+        "accessibilityImpact": {
+          "type": "string",
+          "enum": [
+            "no_impact",
+            "equivalent_alternative_required",
+            "review_required"
+          ]
+        },
+        "consentRequirement": {
+          "type": "string",
+          "enum": [
+            "none",
+            "explicit_opt_in",
+            "research_consent",
+            "prohibited"
+          ]
+        },
+        "reviewStatus": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "reviewed",
+            "active",
+            "expired",
+            "withdrawn"
+          ]
+        },
+        "emergencyException": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "postIncidentDisclosureRequired"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "postIncidentDisclosureRequired": {
+              "type": "boolean"
+            },
+            "disclosureDeadline": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            }
+          }
+        },
+        "externalActionAuthorized": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  }
+}
