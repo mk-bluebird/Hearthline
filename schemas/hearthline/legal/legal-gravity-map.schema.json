@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hearthline.example/schemas/legal/legal-gravity-map.schema.json",
+  "title": "LegalGravityMap",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "objectType",
+    "version",
+    "publishedAt",
+    "globalNonAdviceNotice",
+    "entries",
+    "tracking",
+    "externalActionAuthorized"
+  ],
+  "properties": {
+    "objectType": {
+      "type": "string",
+      "const": "LegalGravityMap"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "globalNonAdviceNotice": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 2000
+    },
+    "tracking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accountLinkedViewTracking",
+        "jurisdictionSelectionTracking",
+        "acknowledgementTracking",
+        "analyticsTracking",
+        "personLevelScoring"
+      ],
+      "properties": {
+        "accountLinkedViewTracking": {
+          "type": "boolean",
+          "const": false
+        },
+        "jurisdictionSelectionTracking": {
+          "type": "boolean",
+          "const": false
+        },
+        "acknowledgementTracking": {
+          "type": "boolean",
+          "const": false
+        },
+        "analyticsTracking": {
+          "type": "boolean",
+          "const": false
+        },
+        "personLevelScoring": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/jurisdictionEntry"
+      }
+    },
+    "externalActionAuthorized": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$defs": {
+    "jurisdictionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "jurisdictionCode",
+        "displayName",
+        "effectiveDate",
+        "reviewRequiredBy",
+        "nonAdviceNotice",
+        "featurePostures",
+        "officialSources",
+        "accessibility"
+      ],
+      "properties": {
+        "jurisdictionCode": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}(-[A-Z0-9]{1,12})?$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "effectiveDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "reviewRequiredBy": {
+          "type": "string",
+          "format": "date"
+        },
+        "nonAdviceNotice": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 2000
+        },
+        "featurePostures": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/featurePosture"
+          }
+        },
+        "officialSources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "accessibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "plainLanguageAvailable",
+            "keyboardNavigable",
+            "screenReaderStructured",
+            "printFriendly",
+            "reducedMotionCompatible",
+            "textResizeCompatible"
+          ],
+          "properties": {
+            "plainLanguageAvailable": {
+              "type": "boolean",
+              "const": true
+            },
+            "keyboardNavigable": {
+              "type": "boolean",
+              "const": true
+            },
+            "screenReaderStructured": {
+              "type": "boolean",
+              "const": true
+            },
+            "printFriendly": {
+              "type": "boolean",
+              "const": true
+            },
+            "reducedMotionCompatible": {
+              "type": "boolean",
+              "const": true
+            },
+            "textResizeCompatible": {
+              "type": "boolean",
+              "const": true
+            }
+          }
+        }
+      }
+    },
+    "featurePosture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "featureId",
+        "status",
+        "plainLanguageBoundary",
+        "lastCounselReviewDate"
+      ],
+      "properties": {
+        "featureId": {
+          "type": "string",
+          "enum": [
+            "general_adult_connection",
+            "noncommercial_integrity",
+            "coarse_meeting_context",
+            "private_compatibility_discussion",
+            "meeting_plan",
+            "public_activity_invitation",
+            "private_venue_discussion",
+            "financial_or_value_exchange"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "information_only",
+            "reviewed_available",
+            "reviewed_restricted",
+            "not_available",
+            "under_review"
+          ]
+        },
+        "plainLanguageBoundary": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 2000
+        },
+        "lastCounselReviewDate": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "url",
+        "sourceType"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 240
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": [
+            "statute",
+            "regulation",
+            "official_guidance",
+            "court_opinion",
+            "legislative_summary"
+          ]
+        }
+      }
+    }
+  }
+}
