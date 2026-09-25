@@ -1,0 +1,25 @@
+{
+  "regionSet": [
+    "phoenix-northwest",
+    "glendale-central"
+  ],
+  "timeWindow": {
+    "startsAt": "2026-09-26T19:00:00-07:00",
+    "endsAt": "2026-09-26T22:00:00-07:00"
+  },
+  "intents": [
+    "casual_encounter",
+    "conversation"
+  ],
+  "venuePreferences": [
+    "public_cafe",
+    "public_activity",
+    "discuss_together"
+  ],
+  "mutualIntroductionOnly": true,
+  "noncommercialAttestation": {
+    "version": "hearthline-az-noncommercial-v1",
+    "valueForIntimacyProhibited": true
+  },
+  "expiresAt": "2026-09-26T22:00:00-07:00"
+}
