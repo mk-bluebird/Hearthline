@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> unopened
+    unopened --> drafting: user opens private reflection
+    drafting --> saved_session: user saves in session memory
+    drafting --> saved_local: user chooses encrypted local storage
+    drafting --> exported: user explicitly exports a file
+    drafting --> discarded: user discards draft
+    saved_session --> discarded: tab closes or user deletes
+    saved_local --> expired: user-selected expiry occurs
+    saved_local --> deleted: user deletes
+    saved_local --> exported: user explicitly exports
+    exported --> discarded: local copy absent or user deletes it
+    discarded --> [*]
+    deleted --> [*]
+    expired --> [*]
