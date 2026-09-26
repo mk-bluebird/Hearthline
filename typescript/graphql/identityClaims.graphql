@@ -1,0 +1,124 @@
+scalar DateTime
+
+enum IdentityClaimCategory {
+  DISPLAY_NAME
+  PRONOUNS
+  LANGUAGE
+  CONNECTION_INTENT
+  COMMUNICATION_PREFERENCE
+  ACTIVITY_INTEREST
+  SELF_DESCRIPTION
+  SEXUAL_ORIENTATION
+  GENDER_IDENTITY
+  RACE_ETHNICITY_NATIONALITY
+  FAITH_OR_RELIGION
+  ACCESSIBILITY_CONTEXT
+  HEALTH_CONTEXT
+  RECOVERY_OR_SOBRIETY_CONTEXT
+  RELATIONSHIP_CONTEXT
+  INTIMATE_PREFERENCE
+  FINANCIAL_OR_HOUSING_CONTEXT
+  EMPLOYMENT_OR_EDUCATION_CONTEXT
+  IMMIGRATION_OR_LEGAL_CONTEXT
+}
+
+enum IdentityAssertionStatus {
+  SELF_STATED
+  CREDENTIAL_PRESENTED
+  NOT_DISCLOSED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum IdentitySensitivity {
+  ORDINARY
+  SENSITIVE
+  PROTECTED
+}
+
+enum IdentityClaimState {
+  DRAFT
+  ACTIVE
+  PAUSED_BY_OWNER
+  WITHDRAWN
+  EXPIRED
+  DELETED
+}
+
+enum IdentityVisibility {
+  PRIVATE
+  ELIGIBLE_DISCOVERY_ONLY
+  RECIPROCAL_INTEREST_ONLY
+  SPECIFIC_MEMBER_ONLY
+  SPECIFIC_TRUSTED_CONTACT_ONLY
+}
+
+type IdentityClaim {
+  claimId: ID!
+  category: IdentityClaimCategory!
+  assertionStatus: IdentityAssertionStatus!
+  sensitivity: IdentitySensitivity!
+  state: IdentityClaimState!
+  visibility: IdentityVisibility!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  expiresAt: DateTime
+  withdrawnAt: DateTime
+}
+
+type IdentityClaimValue {
+  claimId: ID!
+  value: String!
+}
+
+input CreateIdentityClaimInput {
+  category: IdentityClaimCategory!
+  value: String!
+  assertionStatus: IdentityAssertionStatus!
+}
+
+input UpdateIdentityClaimInput {
+  claimId: ID!
+  value: String
+  state: IdentityClaimState
+}
+
+input CreateIdentityDisclosureInput {
+  level: Int!
+  purpose: String!
+  recipientRef: ID!
+  fieldRefs: [ID!]!
+  expiresAt: DateTime!
+}
+
+type IdentityDisclosure {
+  disclosureId: ID!
+  level: Int!
+  state: String!
+  purpose: String!
+  recipientRef: ID
+  fieldRefs: [ID!]!
+  expiresAt: DateTime!
+  withdrawnAt: DateTime
+}
+
+type Query {
+  myIdentityClaims: [IdentityClaim!]!
+  myIdentityClaimValue(claimId: ID!): IdentityClaimValue
+  myIdentityDisclosures: [IdentityDisclosure!]!
+}
+
+type Mutation {
+  createIdentityClaim(input: CreateIdentityClaimInput!): IdentityClaim!
+  updateIdentityClaim(input: UpdateIdentityClaimInput!): IdentityClaim!
+  withdrawIdentityClaim(claimId: ID!): IdentityClaim!
+  deleteIdentityClaim(claimId: ID!): Boolean!
+
+  proposeIdentityDisclosure(
+    input: CreateIdentityDisclosureInput!
+  ): IdentityDisclosure!
+
+  withdrawIdentityDisclosure(
+    disclosureId: ID!
+  ): IdentityDisclosure!
+}
