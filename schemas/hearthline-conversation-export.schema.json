@@ -1,0 +1,283 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://augmented-hub.example/schemas/hearthline-conversation-export.schema.json",
+  "title": "Hearthline Participant-Controlled Conversation Export",
+  "description": "A participant-controlled export format. It excludes third-party participant content by default and requires an explicit, granular declaration for each included item.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "formatVersion",
+    "exportId",
+    "createdAt",
+    "exporter",
+    "purpose",
+    "replication",
+    "contents",
+    "integrity"
+  ],
+  "properties": {
+    "format": {
+      "const": "hearthline-conversation-export"
+    },
+    "formatVersion": {
+      "const": "1.0"
+    },
+    "exportId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "exporter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selfAssertedLabel",
+        "controlStatement"
+      ],
+      "properties": {
+        "selfAssertedLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "controlStatement": {
+          "const": "The exporter controls this copy. It does not create public status, verification, ranking, or eligibility."
+        }
+      }
+    },
+    "purpose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "declared",
+        "recipientClass",
+        "expiresAt"
+      ],
+      "properties": {
+        "declared": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 1000
+        },
+        "recipientClass": {
+          "enum": [
+            "self",
+            "named-person",
+            "named-organization",
+            "approved-tool"
+          ]
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "replication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "thirdPartyReplicationDefault",
+        "redistributionDefault",
+        "machineLearningTrainingAllowed",
+        "automatedDecisionUseAllowed",
+        "revocationContact"
+      ],
+      "properties": {
+        "thirdPartyReplicationDefault": {
+          "const": "prohibited"
+        },
+        "redistributionDefault": {
+          "const": "prohibited"
+        },
+        "machineLearningTrainingAllowed": {
+          "const": false
+        },
+        "automatedDecisionUseAllowed": {
+          "const": false
+        },
+        "revocationContact": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 500
+        }
+      }
+    },
+    "contents": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entryId",
+          "createdAt",
+          "authorRelation",
+          "body",
+          "inclusionAuthorization"
+        ],
+        "properties": {
+          "entryId": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorRelation": {
+            "enum": [
+              "exporter-authored",
+              "third-party-authored-with-explicit-authorization"
+            ]
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50000
+          },
+          "inclusionAuthorization": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "basis",
+              "grantedAt",
+              "scope",
+              "revocable"
+            ],
+            "properties": {
+              "basis": {
+                "enum": [
+                  "self-authored",
+                  "explicit-third-party-authorization"
+                ]
+              },
+              "grantedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "scope": {
+                "enum": [
+                  "single-export"
+                ]
+              },
+              "revocable": {
+                "const": true
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "basis": {
+                      "const": "self-authored"
+                    }
+                  },
+                  "required": [
+                    "basis"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "scope": {
+                      "const": "single-export"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "authorRelation": {
+                  "const": "exporter-authored"
+                }
+              },
+              "required": [
+                "authorRelation"
+              ]
+            },
+            "then": {
+              "properties": {
+                "inclusionAuthorization": {
+                  "properties": {
+                    "basis": {
+                      "const": "self-authored"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "authorRelation": {
+                  "const": "third-party-authored-with-explicit-authorization"
+                }
+              },
+              "required": [
+                "authorRelation"
+              ]
+            },
+            "then": {
+              "properties": {
+                "inclusionAuthorization": {
+                  "properties": {
+                    "basis": {
+                      "const": "explicit-third-party-authorization"
+                    },
+                    "scope": {
+                      "const": "single-export"
+                    },
+                    "revocable": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "basis",
+                    "scope",
+                    "revocable"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonicalization",
+        "contentHashAlgorithm",
+        "contentHash"
+      ],
+      "properties": {
+        "canonicalization": {
+          "const": "RFC8785-JCS"
+        },
+        "contentHashAlgorithm": {
+          "const": "SHA-256"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}
