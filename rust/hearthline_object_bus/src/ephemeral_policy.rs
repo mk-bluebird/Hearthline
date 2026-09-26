@@ -1,3 +1,4 @@
+use crate::RetentionClass;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -25,6 +26,7 @@ pub enum EphemeralStorageMode {
 pub struct EphemeralStorageDeclaration {
     pub object_class: EphemeralObjectClass,
     pub storage_mode: EphemeralStorageMode,
+    pub retention_class: RetentionClass,
     pub network_transport_allowed: bool,
     pub plaintext_server_storage_allowed: bool,
     pub external_action_authorized: bool,
@@ -47,6 +49,7 @@ pub enum EphemeralPolicyError {
     AutomaticSyncRejected,
     MissingSecurityReview,
     InvalidObjectModePair,
+    RetentionClassMismatch,
 }
 
 pub fn validate_ephemeral_storage(
@@ -73,8 +76,11 @@ pub fn validate_ephemeral_storage(
     }
 
     match declaration.object_class {
-        EphemeralObjectClass::LocalOnlyReflection
-        | EphemeralObjectClass::LocalExportableReflection => {
+        EphemeralObjectClass::LocalOnlyReflection => {
+            if declaration.retention_class != RetentionClass::LocalOnly {
+                return Err(EphemeralPolicyError::RetentionClassMismatch);
+            }
+
             if declaration.network_transport_allowed {
                 return Err(EphemeralPolicyError::LocalOnlyTransportRejected);
             }
@@ -83,21 +89,130 @@ pub fn validate_ephemeral_storage(
                 return Err(EphemeralPolicyError::AutomaticSyncRejected);
             }
 
-            if !declaration.user_export_only
-                && declaration.object_class == EphemeralObjectClass::LocalExportableReflection
-            {
+            if declaration.user_export_only {
                 return Err(EphemeralPolicyError::InvalidObjectModePair);
             }
+
+            match declaration.storage_mode {
+                EphemeralStorageMode::BrowserMemoryOnly
+                | EphemeralStorageMode::ExplicitLocalEncryptedStore => Ok(()),
+                EphemeralStorageMode::LocalFileExportOnly
+                | EphemeralStorageMode::SyntheticCiphertextTransport
+                | EphemeralStorageMode::ReviewedServerCiphertextStore => {
+                    Err(EphemeralPolicyError::InvalidObjectModePair)
+                }
+            }
         }
-        EphemeralObjectClass::PurposeLimitedPairwiseContext
-        | EphemeralObjectClass::EphemeralServerCiphertext => {
+        EphemeralObjectClass::LocalExportableReflection => {
+            if declaration.retention_class != RetentionClass::LocalOnly {
+                return Err(EphemeralPolicyError::RetentionClassMismatch);
+            }
+
+            if declaration.network_transport_allowed {
+                return Err(EphemeralPolicyError::LocalOnlyTransportRejected);
+            }
+
+            if declaration.ordinary_sync_allowed {
+                return Err(EphemeralPolicyError::AutomaticSyncRejected);
+            }
+
+            if !declaration.user_export_only {
+                return Err(EphemeralPolicyError::InvalidObjectModePair);
+            }
+
+            match declaration.storage_mode {
+                EphemeralStorageMode::BrowserMemoryOnly
+                | EphemeralStorageMode::ExplicitLocalEncryptedStore
+                | EphemeralStorageMode::LocalFileExportOnly => Ok(()),
+                EphemeralStorageMode::SyntheticCiphertextTransport
+                | EphemeralStorageMode::ReviewedServerCiphertextStore => {
+                    Err(EphemeralPolicyError::InvalidObjectModePair)
+                }
+            }
+        }
+        EphemeralObjectClass::PurposeLimitedPairwiseContext => {
+            if declaration.retention_class != RetentionClass::PurposeLimited {
+                return Err(EphemeralPolicyError::RetentionClassMismatch);
+            }
+
             if !declaration.requires_security_review {
                 return Err(EphemeralPolicyError::MissingSecurityReview);
             }
-        }
-        EphemeralObjectClass::AggregateOnlyMeasure
-        | EphemeralObjectClass::GovernanceRecord => {}
-    }
 
-    Ok(())
+            match declaration.storage_mode {
+                EphemeralStorageMode::SyntheticCiphertextTransport
+                | EphemeralStorageMode::ReviewedServerCiphertextStore => Ok(()),
+                EphemeralStorageMode::BrowserMemoryOnly
+                | EphemeralStorageMode::ExplicitLocalEncryptedStore
+                | EphemeralStorageMode::LocalFileExportOnly => {
+                    Err(EphemeralPolicyError::InvalidObjectModePair)
+                }
+            }
+        }
+        EphemeralObjectClass::EphemeralServerCiphertext => {
+            if declaration.retention_class != RetentionClass::Ephemeral {
+                return Err(EphemeralPolicyError::RetentionClassMismatch);
+            }
+
+            if !declaration.requires_security_review {
+                return Err(EphemeralPolicyError::MissingSecurityReview);
+            }
+
+            match declaration.storage_mode {
+                EphemeralStorageMode::SyntheticCiphertextTransport
+                | EphemeralStorageMode::ReviewedServerCiphertextStore => Ok(()),
+                EphemeralStorageMode::BrowserMemoryOnly
+                | EphemeralStorageMode::ExplicitLocalEncryptedStore
+                | EphemeralStorageMode::LocalFileExportOnly => {
+                    Err(EphemeralPolicyError::InvalidObjectModePair)
+                }
+            }
+        }
+        EphemeralObjectClass::AggregateOnlyMeasure => {
+            if declaration.retention_class != RetentionClass::AggregateOnly {
+                return Err(EphemeralPolicyError::RetentionClassMismatch);
+            }
+
+            if declaration.network_transport_allowed {
+                return Err(EphemeralPolicyError::InvalidObjectModePair);
+            }
+
+            if declaration.ordinary_sync_allowed || declaration.user_export_only {
+                return Err(EphemeralPolicyError::InvalidObjectModePair);
+            }
+
+            match declaration.storage_mode {
+                EphemeralStorageMode::BrowserMemoryOnly
+                | EphemeralStorageMode::ExplicitLocalEncryptedStore
+                | EphemeralStorageMode::LocalFileExportOnly => {
+                    Err(EphemeralPolicyError::InvalidObjectModePair)
+                }
+                EphemeralStorageMode::SyntheticCiphertextTransport
+                | EphemeralStorageMode::ReviewedServerCiphertextStore => Ok(()),
+            }
+        }
+        EphemeralObjectClass::GovernanceRecord => {
+            if declaration.retention_class != RetentionClass::PurposeLimited {
+                return Err(EphemeralPolicyError::RetentionClassMismatch);
+            }
+
+            if declaration.network_transport_allowed {
+                return Err(EphemeralPolicyError::InvalidObjectModePair);
+            }
+
+            if declaration.ordinary_sync_allowed || declaration.user_export_only {
+                return Err(EphemeralPolicyError::InvalidObjectModePair);
+            }
+
+            match declaration.storage_mode {
+                EphemeralStorageMode::BrowserMemoryOnly
+                | EphemeralStorageMode::ExplicitLocalEncryptedStore
+                | EphemeralStorageMode::LocalFileExportOnly => {
+                    Err(EphemeralPolicyError::InvalidObjectModePair)
+                }
+                EphemeralStorageMode::SyntheticCiphertextTransport
+                | EphemeralStorageMode::ReviewedServerCiphertextStore => Ok(()),
+            }
+        }
+    }
 }
