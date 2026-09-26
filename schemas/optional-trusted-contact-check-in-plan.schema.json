@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hearthline.example/schemas/optional-trusted-contact-check-in-plan.schema.json",
+  "title": "Hearthline Optional Trusted-Contact Check-In Plan",
+  "description": "A member-controlled, recipient-scoped, expiring check-in plan. It does not track location, route, attendance, device state, arrival, departure, emergency status, or counterpart activity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "planId",
+    "ownerRef",
+    "state",
+    "trustedContacts",
+    "messageScope",
+    "createdAt",
+    "expiresAt",
+    "memberInitiated"
+  ],
+  "properties": {
+    "planId": {
+      "type": "string",
+      "pattern": "^checkin_plan_[A-Za-z0-9_-]{16,128}$"
+    },
+    "ownerRef": {
+      "type": "string",
+      "pattern": "^member_[A-Za-z0-9_-]{16,128}$"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "paused_by_owner",
+        "cancelled",
+        "expired"
+      ]
+    },
+    "trustedContacts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^trusted_contact_[A-Za-z0-9_-]{16,128}$"
+      }
+    },
+    "messageScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "includeNeutralCheckInRequest",
+        "includeBroadActivityCategory",
+        "includeVenueCategory",
+        "includeNamedPublicVenue",
+        "includeMemberWrittenNote"
+      ],
+      "properties": {
+        "includeNeutralCheckInRequest": {
+          "type": "boolean"
+        },
+        "includeBroadActivityCategory": {
+          "type": "boolean"
+        },
+        "includeVenueCategory": {
+          "type": "boolean"
+        },
+        "includeNamedPublicVenue": {
+          "type": "boolean"
+        },
+        "includeMemberWrittenNote": {
+          "type": "boolean"
+        }
+      }
+    },
+    "namedVenueDisclosureRef": {
+      "type": "string",
+      "pattern": "^envelope_[A-Za-z0-9_-]{16,128}$"
+    },
+    "meetingPlanRef": {
+      "type": "string",
+      "pattern": "^meeting_plan_[A-Za-z0-9_-]{16,128}$"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cancelledAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "memberInitiated": {
+      "type": "boolean",
+      "const": true
+    }
+  },
+  "$comment": "Forbidden fields include latitude, longitude, coordinates, GeoHash, location history, route, origin, destination, arrival state, departure state, attendance state, device status, emergency score, inactivity detector, counterpart identity, counterpart profile, safety score, risk score, trust score, and automatic emergency-service routing."
+}
