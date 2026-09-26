@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hearthline.example/schemas/human-directed-coordination-draft.schema.json",
+  "title": "Hearthline Human-Directed Coordination Draft",
+  "description": "A private, editable draft prepared for a member. It is not an agent negotiation, message transmission, consent grant, meeting confirmation, availability disclosure, or autonomous action.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftId",
+    "ownerRef",
+    "state",
+    "draftKind",
+    "memberSelectedInputs",
+    "draftText",
+    "createdAt",
+    "externalActionAuthorized"
+  ],
+  "properties": {
+    "draftId": {
+      "type": "string",
+      "pattern": "^coordination_draft_[A-Za-z0-9_-]{16,128}$"
+    },
+    "ownerRef": {
+      "type": "string",
+      "pattern": "^member_[A-Za-z0-9_-]{16,128}$"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "private_draft",
+        "edited_by_member",
+        "discarded"
+      ]
+    },
+    "draftKind": {
+      "type": "string",
+      "enum": [
+        "public_first_activity_invitation",
+        "remote_first_activity_invitation",
+        "pace_question",
+        "continue_conversation_question",
+        "respectful_decline",
+        "consent_checkpoint_reminder"
+      ]
+    },
+    "memberSelectedInputs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "selected_activity_context",
+          "selected_broad_time_block",
+          "selected_public_first_preference",
+          "selected_remote_first_preference",
+          "selected_text_first_preference",
+          "selected_pace_preference",
+          "selected_optional_question",
+          "selected_decline_template"
+        ]
+      }
+    },
+    "draftText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "externalActionAuthorized": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "$comment": "Forbidden fields: recipient negotiation state, agent identifier, utility score, target response probability, counterpart availability, counterpart preferences, inferred consent, exact schedule, calendar data, location, route, venue, transport, payment, housing, employment, drugs, intimacy outcome, message send state, or external-action authorization."
+}
