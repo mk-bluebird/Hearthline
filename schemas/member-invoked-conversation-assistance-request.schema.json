@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hearthline.example/schemas/member-invoked-conversation-assistance-request.schema.json",
+  "title": "Hearthline Member-Invoked Conversation Assistance Request",
+  "description": "A member-initiated request for limited drafting, explanation, or report preparation. The object is not a surveillance record, behavior profile, moderation verdict, or automatic enforcement instruction.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "memberRef",
+    "task",
+    "selectedContent",
+    "createdAt",
+    "retentionClass",
+    "memberInitiated"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^chat_assist_[A-Za-z0-9_-]{16,128}$"
+    },
+    "memberRef": {
+      "type": "string",
+      "pattern": "^member_[A-Za-z0-9_-]{16,128}$"
+    },
+    "task": {
+      "type": "string",
+      "enum": [
+        "draft_boundary",
+        "draft_decline",
+        "draft_public_first_invitation",
+        "draft_pace_request",
+        "explain_consent_checkpoint",
+        "summarize_selected_shared_preferences",
+        "review_selected_pressure_pattern",
+        "draft_report_from_selected_content",
+        "explain_block_or_report_options"
+      ]
+    },
+    "selectedContent": {
+      "type": "array",
+      "description": "Only text deliberately selected by the requesting member for this task. The caller must minimize content before submitting.",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contentRef",
+          "text"
+        ],
+        "properties": {
+          "contentRef": {
+            "type": "string",
+            "pattern": "^selected_message_[A-Za-z0-9_-]{16,128}$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 6000
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "retentionClass": {
+      "type": "string",
+      "enum": [
+        "local_only",
+        "ephemeral_task_processing",
+        "member_saved_draft"
+      ]
+    },
+    "memberInitiated": {
+      "type": "boolean",
+      "const": true
+    }
+  },
+  "$comment": "Forbidden fields include inferred identity, diagnosis, mental-health state, recovery status, emotion score, manipulation score, risk score, safety score, trust score, counterpart profile, precise location, venue history, contact graph, automatic enforcement action, or a general conversation transcript."
+}
