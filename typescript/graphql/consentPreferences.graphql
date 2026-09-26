@@ -1,0 +1,190 @@
+scalar DateTime
+
+enum AdultPlatformEligibilityState {
+  UNKNOWN
+  ELIGIBLE
+  INELIGIBLE
+  VERIFICATION_REQUIRED
+  VERIFICATION_EXPIRED
+  SUSPENDED_BY_POLICY
+}
+
+enum ConsentState {
+  UNKNOWN
+  GRANTED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum ConsentCapability {
+  RECEIVE_DISCOVERY_PRESENTATION
+  EXPRESS_ACTIVITY_INTEREST
+  OPEN_RECIPROCAL_INTEREST_WINDOW
+  OPEN_DIRECT_CONVERSATION
+  DISCUSS_SEXUAL_TOPICS
+  SHARE_MEDIA
+  VIEW_SHARED_MEDIA
+  START_VOICE_CALL
+  START_VIDEO_CALL
+  DISCUSS_NAMED_PUBLIC_VENUE
+  CREATE_PUBLIC_FIRST_MEETING_PLAN
+  SHARE_TRUSTED_CONTACT_PLAN
+  ENABLE_AR_CAMERA
+  ENABLE_AR_MICROPHONE
+  ENABLE_AR_SPATIAL_MAPPING
+  RECORD_AR_OR_CALL_SESSION
+}
+
+enum ConsentPurpose {
+  DISCOVERY
+  CONVERSATION
+  MEDIA
+  CALL
+  MEETING_PLANNING
+  TRUSTED_CONTACT
+  AR_EXPERIENCE
+}
+
+enum RecipientScopeKind {
+  SELF_ONLY
+  SPECIFIC_MEMBER
+  SPECIFIC_TRUSTED_CONTACT
+  SPECIFIC_SESSION
+}
+
+enum ConnectionIntent {
+  FRIENDSHIP
+  CONVERSATION
+  SHARED_ACTIVITY
+  DATING
+  ROMANCE
+  INTIMACY
+}
+
+enum PreferenceDomain {
+  CONNECTION_INTENT
+  ACTIVITY
+  ATMOSPHERE
+  COMMUNICATION_PACE
+  CONVERSATION_STYLE
+  LANGUAGE
+  BROAD_AREA
+  AVAILABILITY_WINDOW
+  DISCOVERY_DISPLAY_ORDER
+}
+
+enum PreferenceVisibility {
+  PRIVATE
+  ELIGIBLE_DISCOVERY_ONLY
+  RECIPROCAL_INTEREST_ONLY
+  SPECIFIC_MEMBER_ONLY
+}
+
+enum BoundaryAnswer {
+  YES
+  NO
+  ASK_FIRST
+  NOT_DISCUSSING
+}
+
+type AdultPlatformEligibility {
+  minimumAgePolicy: Int!
+  state: AdultPlatformEligibilityState!
+  assessedAt: DateTime!
+  reviewBy: DateTime!
+  policyVersion: String!
+}
+
+type RecipientScope {
+  kind: RecipientScopeKind!
+  recipientRef: ID
+}
+
+type ConsentGrant {
+  grantId: ID!
+  state: ConsentState!
+  capability: ConsentCapability!
+  purpose: ConsentPurpose!
+  recipientScope: RecipientScope!
+  grantedAt: DateTime
+  withdrawnAt: DateTime
+  expiresAt: DateTime
+  policyVersion: String!
+  updatedAt: DateTime!
+}
+
+type PreferenceFacet {
+  facetId: ID!
+  domain: PreferenceDomain!
+  value: String!
+  memberSelected: Boolean!
+  visibility: PreferenceVisibility!
+  displayWeight: Int
+  updatedAt: DateTime!
+  expiresAt: DateTime
+}
+
+type PreferenceGraph {
+  facets: [PreferenceFacet!]!
+  graphVersion: String!
+  updatedAt: DateTime!
+}
+
+type BoundaryLedger {
+  publicFirstMeeting: BoundaryAnswer!
+  locationSharing: BoundaryAnswer!
+  photoSharing: BoundaryAnswer!
+  recording: BoundaryAnswer!
+  sexualTopics: BoundaryAnswer!
+  moneyOrMaterialExchange: BoundaryAnswer!
+  transportConditionedOnIntimacy: BoundaryAnswer!
+  updatedAt: DateTime!
+}
+
+type ConsentAndPreferenceContext {
+  adultPlatformEligibility: AdultPlatformEligibility!
+  consentLedger: [ConsentGrant!]!
+  preferenceGraph: PreferenceGraph!
+  boundaryLedger: BoundaryLedger!
+}
+
+input GrantConsentInput {
+  capability: ConsentCapability!
+  purpose: ConsentPurpose!
+  recipientScopeKind: RecipientScopeKind!
+  recipientRef: ID
+  expiresAt: DateTime!
+}
+
+input WithdrawConsentInput {
+  grantId: ID!
+}
+
+input PreferenceFacetInput {
+  domain: PreferenceDomain!
+  value: String!
+  visibility: PreferenceVisibility!
+  displayWeight: Int
+  expiresAt: DateTime
+}
+
+input BoundaryLedgerInput {
+  publicFirstMeeting: BoundaryAnswer!
+  locationSharing: BoundaryAnswer!
+  photoSharing: BoundaryAnswer!
+  recording: BoundaryAnswer!
+  sexualTopics: BoundaryAnswer!
+}
+
+type Query {
+  myConsentAndPreferences: ConsentAndPreferenceContext!
+  myConsentGrant(grantId: ID!): ConsentGrant
+}
+
+type Mutation {
+  grantConsent(input: GrantConsentInput!): ConsentGrant!
+  withdrawConsent(input: WithdrawConsentInput!): ConsentGrant!
+  upsertPreferenceFacet(input: PreferenceFacetInput!): PreferenceFacet!
+  removePreferenceFacet(facetId: ID!): Boolean!
+  updateBoundaryLedger(input: BoundaryLedgerInput!): BoundaryLedger!
+}
