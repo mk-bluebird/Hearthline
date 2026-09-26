@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en" data-color-scheme="system">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <meta
+    name="description"
+    content="Hearthline is a rights-centered community conversation shell with clearly bounded AI facilitation."
+  >
+  <meta
+    name="theme-color"
+    media="(prefers-color-scheme: light)"
+    content="#fffaf2"
+  >
+  <meta
+    name="theme-color"
+    media="(prefers-color-scheme: dark)"
+    content="#181511"
+  >
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="
+      default-src 'self';
+      base-uri 'none';
+      form-action 'self';
+      frame-ancestors 'none';
+      img-src 'self' data:;
+      object-src 'none';
+      script-src 'self';
+      style-src 'self';
+      connect-src 'self';
+      upgrade-insecure-requests
+    "
+  >
+  <title>Hearthline — Community conversation</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+
+<body>
+  <a class="skip-link" href="#conversation">Skip to conversation</a>
+
+  <div class="application-shell">
+    <header class="site-header">
+      <a class="wordmark" href="./" aria-label="Hearthline home">
+        <span aria-hidden="true">◖</span>
+        Hearthline
+      </a>
+
+      <nav aria-label="Primary navigation">
+        <a href="#community-principles">Community principles</a>
+        <a href="#ai-boundaries">AI boundaries</a>
+        <button
+          class="appearance-control"
+          type="button"
+          id="appearance-toggle"
+          aria-pressed="false"
+        >
+          Use high contrast
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="welcome-panel" aria-labelledby="welcome-title">
+        <p class="eyebrow">Demonstration interface</p>
+        <h1 id="welcome-title">A shared hearth for community conversation.</h1>
+        <p class="lead">
+          Hearthline supports human-to-human exchange. Optional AI tools may
+          help summarize an explicitly selected discussion, translate a message,
+          or suggest inclusive prompts—but they do not determine status,
+          credibility, access, identity, or belonging.
+        </p>
+
+        <div class="consent-panel" id="consent-panel">
+          <div>
+            <h2>Before AI assistance is enabled</h2>
+            <p>
+              AI assistance is off by default. If enabled, only text you
+              deliberately submit for that request is eligible to be sent to a
+              future configured service. Do not include sensitive personal,
+              biometric, health, neural, credential, security, or institutional
+              information in this demonstration.
+            </p>
+          </div>
+
+          <label class="consent-choice">
+            <input id="ai-consent" type="checkbox">
+            <span>
+              I understand that AI assistance is optional and that I should
+              review any output before sharing it with others.
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <div class="content-layout">
+        <aside class="community-sidebar" aria-label="Community spaces">
+          <section>
+            <h2>Community spaces</h2>
+            <ul class="space-list">
+              <li>
+                <button class="space-button is-active" type="button" aria-current="page">
+                  <span aria-hidden="true">#</span> Welcome hearth
+                </button>
+              </li>
+              <li>
+                <button class="space-button" type="button">
+                  <span aria-hidden="true">#</span> Mutual aid
+                </button>
+              </li>
+              <li>
+                <button class="space-button" type="button">
+                  <span aria-hidden="true">#</span> Repair and reuse
+                </button>
+              </li>
+              <li>
+                <button class="space-button" type="button">
+                  <span aria-hidden="true">#</span> Ecological care
+                </button>
+              </li>
+            </ul>
+          </section>
+
+          <section id="community-principles">
+            <h2>Community principles</h2>
+            <ul class="compact-list">
+              <li>Respect self-description and communication preference.</li>
+              <li>Use consent before quoting, summarizing, or sharing.</li>
+              <li>Offer accessible, human-readable clarification.</li>
+              <li>Seek repair and support rather than public shaming.</li>
+            </ul>
+          </section>
+
+          <section id="ai-boundaries">
+            <h2>AI boundaries</h2>
+            <ul class="compact-list">
+              <li>AI assistance is optional and revocable for each request.</li>
+              <li>AI output is a draft, never a decision or authority.</li>
+              <li>No automated social ranking, eligibility, or identity verification.</li>
+              <li>Human review and accessible appeal paths remain available.</li>
+            </ul>
+          </section>
+        </aside>
+
+        <section
+          class="conversation-panel"
+          id="conversation"
+          aria-labelledby="conversation-title"
+        >
+          <header class="conversation-header">
+            <div>
+              <p class="eyebrow">Community space</p>
+              <h2 id="conversation-title"># Welcome hearth</h2>
+              <p>
+                Introductions, access needs, shared intentions, and community
+                care practices.
+              </p>
+            </div>
+
+            <button class="quiet-mode-control" id="quiet-mode-toggle" type="button">
+              Pause message announcements
+            </button>
+          </header>
+
+          <div
+            class="message-log"
+            id="message-log"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions text"
+            aria-label="Welcome hearth messages"
+          >
+            <article class="message">
+              <div class="message-avatar" aria-hidden="true">A</div>
+              <div class="message-content">
+                <header>
+                  <strong>Arden</strong>
+                  <time datetime="2026-09-26T03:45:00-07:00">3:45 AM</time>
+                </header>
+                <p>
+                  Welcome. You may participate at your own pace, use the
+                  communication format that works for you, and ask for a human
+                  clarification whenever you need one.
+                </p>
+              </div>
+            </article>
+
+            <article class="message">
+              <div class="message-avatar" aria-hidden="true">M</div>
+              <div class="message-content">
+                <header>
+                  <strong>Micah</strong>
+                  <time datetime="2026-09-26T03:49:00-07:00">3:49 AM</time>
+                </header>
+                <p>
+                  I would like to begin a repair-and-reuse thread for household
+                  electronics. A concise checklist and a way to share local
+                  skills would help.
+                </p>
+              </div>
+            </article>
+
+            <article class="message ai-note">
+              <div class="message-avatar" aria-hidden="true">✦</div>
+              <div class="message-content">
+                <header>
+                  <strong>Hearthline facilitation note</strong>
+                  <span class="status-label">Demonstration only</span>
+                </header>
+                <p>
+                  A future AI facilitation request could propose a discussion
+                  outline. It must remain reviewable, attributable to the
+                  request context, and editable before anyone shares it.
+                </p>
+              </div>
+            </article>
+          </div>
+
+          <form class="composer" id="message-composer">
+            <label for="message-text">Write a message</label>
+            <textarea
+              id="message-text"
+              name="message"
+              rows="5"
+              maxlength="2000"
+              placeholder="Share a thought, question, resource, or request for support."
+              aria-describedby="message-guidance message-count"
+              required
+            ></textarea>
+
+            <div class="composer-meta">
+              <p id="message-guidance">
+                Drafts remain in this browser for this demonstration. Press
+                Control + Enter or Command + Enter to add a local message.
+              </p>
+              <output id="message-count" for="message-text">0 / 2000</output>
+            </div>
+
+            <fieldset class="ai-actions">
+              <legend>Optional AI assistance</legend>
+              <p>
+                These controls are demonstrative. They do not call an external
+                model or transmit your message.
+              </p>
+
+              <div class="action-row">
+                <button type="button" data-ai-action="clarify">
+                  Suggest clearer wording
+                </button>
+                <button type="button" data-ai-action="translate">
+                  Prepare a translation request
+                </button>
+                <button type="button" data-ai-action="summary">
+                  Prepare a consent-based summary request
+                </button>
+              </div>
+
+              <output
+                id="ai-response"
+                class="ai-response"
+                aria-live="polite"
+              ></output>
+            </fieldset>
+
+            <div class="composer-actions">
+              <button type="submit" class="primary-action">Add local message</button>
+              <button type="button" id="clear-draft" class="secondary-action">
+                Clear draft
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Hearthline demonstration shell. Community participation and access are
+        not conditioned on AI use, technical disclosure, identity verification,
+        or public personal data.
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
