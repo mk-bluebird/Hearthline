@@ -1,7 +1,8 @@
+use crate::RetentionClass;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PrivacyClass {
     Public,
@@ -10,15 +11,6 @@ pub enum PrivacyClass {
     PurposeLimited,
     LocalOnly,
     AggregateOnly,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum RetentionClass {
-    Ephemeral,
-    PurposeLimited,
-    AggregateOnly,
-    LocalOnly,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -41,7 +33,7 @@ pub struct ObjectManifest {
     pub compatibility_range: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CompositionEdge {
     pub source_object_id: String,
     pub source_output_class: PrivacyClass,
@@ -57,15 +49,58 @@ pub enum CompositionPolicyError {
     RealWorldConsentClaimRejected,
     LocalOnlyOutputRejected,
     PrivateOutputToDiscoveryRejected,
+    PrivateOutputToPublicRejected,
+    PrivateOutputToAggregateRejected,
     MissingAccessibilityPrimitive,
     RetentionClassMismatch,
     IncompatibleInputOutput,
     MissingRequiredReview,
+    InvalidManifestReference,
+    EmptyInputClasses,
+    EmptyOutputClasses,
+    InvalidCompositionEdge,
+}
+
+fn has_text(value: &str) -> bool {
+    !value.trim().is_empty()
+}
+
+fn has_required_manifest_text(manifest: &ObjectManifest) -> bool {
+    has_text(&manifest.object_id)
+        && has_text(&manifest.version)
+        && has_text(&manifest.object_family)
+        && has_text(&manifest.compatibility_range)
+}
+
+fn is_private_class(privacy_class: PrivacyClass) -> bool {
+    matches!(
+        privacy_class,
+        PrivacyClass::RecipientScoped | PrivacyClass::PurposeLimited | PrivacyClass::LocalOnly
+    )
+}
+
+fn target_exposes_broadly(privacy_class: PrivacyClass) -> bool {
+    matches!(
+        privacy_class,
+        PrivacyClass::Public | PrivacyClass::BroadDiscovery | PrivacyClass::AggregateOnly
+    )
 }
 
 pub fn validate_manifest(
     manifest: &ObjectManifest,
 ) -> Result<(), CompositionPolicyError> {
+    if !has_required_manifest_text(manifest) {
+        return Err(CompositionPolicyError::InvalidManifestReference);
+    }
+
+    if manifest.input_classes.is_empty() {
+        return Err(CompositionPolicyError::EmptyInputClasses);
+    }
+
+    if manifest.output_classes.is_empty() {
+        return Err(CompositionPolicyError::EmptyOutputClasses);
+    }
+
     if manifest.external_action_authorized {
         return Err(CompositionPolicyError::ExternalActionRejected);
     }
@@ -77,6 +112,13 @@ pub fn validate_manifest(
     if manifest.local_only
         && (manifest.privacy_class != PrivacyClass::LocalOnly
             || manifest.retention_class != RetentionClass::LocalOnly)
+    {
+        return Err(CompositionPolicyError::RetentionClassMismatch);
+    }
+
+    if !manifest.local_only
+        && (manifest.privacy_class == PrivacyClass::LocalOnly
+            || manifest.retention_class == RetentionClass::LocalOnly)
     {
         return Err(CompositionPolicyError::RetentionClassMismatch);
     }
@@ -97,11 +139,22 @@ pub fn validate_composition_edge(
     target: &ObjectManifest,
     edge: &CompositionEdge,
 ) -> Result<(), CompositionPolicyError> {
+    validate_manifest(source)?;
+    validate_manifest(target)?;
+
     if source.object_id != edge.source_object_id || target.object_id != edge.target_object_id {
         return Err(CompositionPolicyError::UnknownObject);
     }
 
-    if source.local_only || edge.source_output_class == PrivacyClass::LocalOnly {
+    if source.object_id == target.object_id {
+        return Err(CompositionPolicyError::InvalidCompositionEdge);
+    }
+
+    if source.local_only
+        || target.local_only
+        || edge.source_output_class == PrivacyClass::LocalOnly
+        || edge.target_input_class == PrivacyClass::LocalOnly
+    {
         return Err(CompositionPolicyError::LocalOnlyOutputRejected);
     }
 
@@ -111,8 +164,30 @@ pub fn validate_composition_edge(
         return Err(CompositionPolicyError::IncompatibleInputOutput);
     }
 
-    if edge.source_output_class == PrivacyClass::RecipientScoped
+    if edge.source_output_class != edge.target_input_class {
+        return Err(CompositionPolicyError::IncompatibleInputOutput);
+    }
+
+    if is_private_class(edge.source_output_class)
         && target.privacy_class == PrivacyClass::BroadDiscovery
+    {
+        return Err(CompositionPolicyError::PrivateOutputToDiscoveryRejected);
+    }
+
+    if is_private_class(edge.source_output_class)
+        && target.privacy_class == PrivacyClass::Public
+    {
+        return Err(CompositionPolicyError::PrivateOutputToPublicRejected);
+    }
+
+    if is_private_class(edge.source_output_class)
+        && target.privacy_class == PrivacyClass::AggregateOnly
+    {
+        return Err(CompositionPolicyError::PrivateOutputToAggregateRejected);
+    }
+
+    if is_private_class(edge.source_output_class)
+        && target_exposes_broadly(target.privacy_class)
     {
         return Err(CompositionPolicyError::PrivateOutputToDiscoveryRejected);
     }
