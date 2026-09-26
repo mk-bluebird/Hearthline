@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hearthline.example/schemas/relationship-goals-canvas.schema.json",
+  "title": "Hearthline Relationship Goals Canvas",
+  "description": "A member-authored, multidimensional statement of current relationship and connection goals. It is not consent, a contract, a commitment score, a compatibility score, a predictor of future behavior, or a requirement to disclose sensitive personal context.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "canvasId",
+    "ownerRef",
+    "state",
+    "connectionForms",
+    "timeHorizon",
+    "structurePreference",
+    "pacePreferences",
+    "intimacyDiscussionPreference",
+    "visibility",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "canvasId": {
+      "type": "string",
+      "pattern": "^relationship_goals_[A-Za-z0-9_-]{16,128}$"
+    },
+    "ownerRef": {
+      "type": "string",
+      "pattern": "^member_[A-Za-z0-9_-]{16,128}$"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "current",
+        "revising",
+        "paused_by_owner",
+        "withdrawn",
+        "expired"
+      ]
+    },
+    "connectionForms": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "conversation",
+          "friendship",
+          "shared_activity",
+          "dating",
+          "romance",
+          "intimacy",
+          "casual_connection",
+          "undecided"
+        ]
+      }
+    },
+    "timeHorizon": {
+      "type": "string",
+      "enum": [
+        "one_conversation",
+        "short_term_exploration",
+        "open_ended",
+        "undecided",
+        "not_discussing"
+      ]
+    },
+    "structurePreference": {
+      "type": "string",
+      "enum": [
+        "unstructured",
+        "getting_to_know_you",
+        "activity_centered",
+        "date_centered",
+        "relationship_exploration",
+        "undecided",
+        "not_discussing"
+      ]
+    },
+    "pacePreferences": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "text_first",
+          "public_first",
+          "remote_first",
+          "slower_replies_welcome",
+          "no_photo_required",
+          "ask_before_sexual_topics",
+          "advance_planning_preferred",
+          "short_activity_preferred"
+        ]
+      }
+    },
+    "exclusivityDiscussionPreference": {
+      "type": "string",
+      "enum": [
+        "not_discussing",
+        "open_to_discussing_later",
+        "prefer_discussing_before_escalation"
+      ]
+    },
+    "intimacyDiscussionPreference": {
+      "type": "string",
+      "enum": [
+        "not_discussing",
+        "after_mutual_interest",
+        "separate_consent_checkpoint_required"
+      ]
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "private",
+        "eligible_discovery_only",
+        "reciprocal_interest_only"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$comment": "Forbidden fields include numeric casual-to-committed score, relationship readiness score, compatibility score, emotional-state label, stress relief, loneliness, trauma, health, recovery, finances, housing, employment, exact availability, exact location, route, social graph, sexual history, sexual availability, identity inference, trust score, risk score, desirability, popularity, or response prediction."
+}
