@@ -1,0 +1,14 @@
+{
+  "name": "hearthline-api-boundaries",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx server.ts",
+    "test": "tsx --test ../../tests/api-boundaries.test.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
