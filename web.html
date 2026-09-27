@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hearthline — Connection at your pace</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-500-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/lora@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/lora@latest/latin-500-normal.css">
+<style>
+:root {
+  --bg-primary: #FAF7F2;
+  --bg-secondary: #F3EDE4;
+  --bg-card: #FFFFFF;
+  --bg-hover: #F0EAE0;
+  --text-primary: #2D2A26;
+  --text-secondary: #5C5650;
+  --text-muted: #8A8279;
+  --accent: #B8694A;
+  --accent-hover: #A05A3E;
+  --accent-light: #F5E6DC;
+  --sage: #7A8F72;
+  --sage-light: #E8EDE5;
+  --border: #E5DFD6;
+  --border-strong: #D4CCC0;
+  --safety: #B85450;
+  --safety-light: #FBEAEA;
+  --success: #5A8A5E;
+  --success-light: #E5F0E6;
+  --warning: #C49A3C;
+  --warning-light: #FBF5E3;
+  --shadow-sm: 0 1px 3px rgba(45,42,38,0.06);
+  --shadow-md: 0 4px 12px rgba(45,42,38,0.08);
+  --shadow-lg: 0 8px 24px rgba(45,42,38,0.12);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Lora', Georgia, serif;
+  --text-scale: 1;
+  --transition: 0.2s ease;
+}
+
+[data-theme="high-contrast"] {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F5F5;
+  --bg-card: #FFFFFF;
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --border: #999999;
+  --border-strong: #666666;
+}
+
+[data-motion="reduced"] * {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: calc(15px * var(--text-scale));
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  background: var(--accent);
+  color: white;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  z-index: 10000;
+  font-weight: 500;
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
+/* Header */
+.header {
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.brand {
+  font-family: var(--font-heading);
+  font-size: calc(20px * var(--text-scale));
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: -0.3px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-btn {
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: calc(13px * var(--text-scale));
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.header-btn:hover, .header-btn:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.header-btn.safety-btn {
+  color: var(--safety);
+}
+.header-btn.safety-btn:hover {
+  background: var(--safety-light);
+}
+
+.header-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Layout */
+.app-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: calc(100vh - 60px);
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  padding: 20px 12px;
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  display: block;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: calc(14px * var(--text-scale));
+  font-weight: 500;
+  transition: all var(--transition);
+  border: 2px solid transparent;
+}
+.nav-link:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.nav-link:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+.nav-link.active {
+  background: var(--bg-card);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+.nav-link svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Main Content */
+.main-content {
+  padding: 32px 40px;
+  max-width: 900px;
+}
+
+.page-title {
+  font-family: var(--font-heading);
+  font-size: calc(26px * var(--text-scale));
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: calc(14px * var(--text-scale));
+  margin-bottom: 28px;
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-size: calc(17px * var(--text-scale));
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.card-description {
+  color: var(--text-secondary);
+  font-size: calc(14px * var(--text-scale));
+  margin-bottom: 16px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-size: calc(14px * var(--text-scale));
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+  text-decoration: none;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+
+.btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--bg-hover); }
+
+.btn-quiet {
+  background: none;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+}
+.btn-quiet:hover { color: var(--text-primary); background: var(--bg-hover); }
+
+.btn-safety {
+  background: var(--safety-light);
+  color: var(--safety);
+  border: 1px solid #E8C4C3;
+}
+.btn-safety:hover { background: #F5D9D8; }
+
+.btn-destructive {
+  background: var(--safety);
+  color: white;
+}
+.btn-destructive:hover { background: #9E4643; }
+
+.btn-sage {
+  background: var(--sage-light);
+  color: var(--sage);
+  border: 1px solid #C8D5C4;
+}
+.btn-sage:hover { background: #D8E5D4; }
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Home Dashboard */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: calc(14px * var(--text-scale));
+  font-weight: 500;
+}
+.quick-action:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+.quick-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.quick-action svg {
+  width: 20px;
+  height: 20px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Explore Cards */
+.explore-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: calc(13px * var(--text-scale));
+  font-weight: 500;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all var(--transition);
+  color: var(--text-secondary);
+}
+.filter-chip:hover, .filter-chip.active {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.profile-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: box-shadow var(--transition);
+}
+.profile-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.profile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.profile-name {
+  font-family: var(--font-heading);
+  font-size: calc(18px * var(--text-scale));
+  font-weight: 500;
+}
+
+.profile-intent {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--sage-light);
+  color: var(--sage);
+  border-radius: 12px;
+  font-size: calc(12px * var(--text-scale));
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.profile-interests {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.interest-tag {
+  padding: 4px 10px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  font-size: calc(12px * var(--text-scale));
+  color: var(--text-secondary);
+}
+
+.profile-pace {
+  font-size: calc(13px * var(--text-scale));
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Connections */
+.conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition);
+  border: 1px solid transparent;
+}
+.conversation-item:hover {
+  background: var(--bg-hover);
+}
+.conversation-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.conversation-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--accent);
+  font-size: calc(16px * var(--text-scale));
+  flex-shrink: 0;
+}
+
+.conversation-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.conversation-name {
+  font-weight: 500;
+  font-size: calc(14px * var(--text-scale));
+  margin-bottom: 2px;
+}
+
+.conversation-preview {
+  font-size: calc(13px * var(--text-scale));
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conversation-pace {
+  font-size: calc(11px * var(--text-scale));
+  color: var(--sage);
+  font-weight: 500;
+}
+
+/* Safety */
+.safety-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.safety-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: calc(14px * var(--text-scale));
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all var(--transition);
+  text-decoration: none;
+}
+.safety-action:hover {
+  border-color: var(--safety);
+  background: var(--safety-light);
+}
+.safety-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.safety-action svg {
+  width: 18px;
+  height: 18px;
+  color: var(--safety);
+}
+
+/* Account */
+.account-section {
+  margin-bottom: 24px;
+}
+
+.account-section-title {
+  font-size: calc(13px * var(--text-scale));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.account-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.account-item:last-child { border-bottom: none; }
+
+.account-item-label {
+  font-size: calc(14px * var(--text-scale));
+  font-weight: 500;
+}
+
+.account-item-desc {
+  font-size: calc(12px * var(--text-scale));
+  color: var(--text-muted);
+}
+
+/* Activities */
+.activity-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+.activity-type {
+  font-size: calc(12px * var(--text-scale));
+  font-weight: 500;
+  color: var(--sage);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 6px;
+}
+
+.activity-title {
+  font-family: var(--font-heading);
+  font-size: calc(16px * var(--text-scale));
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.activity-details {
+  font-size: calc(13px * var(--text-scale));
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(45,42,38,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-title {
+  font-family: var(--font-heading);
+  font-size: calc(20px * var(--text-scale));
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.modal-body {
+  color: var(--text-secondary);
+  font-size: calc(14px * var(--text-scale));
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+
+.modal-body ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.modal-body li {
+  margin-bottom: 6px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* Accessibility Panel */
+.access-panel {
+  position: fixed;
+  right: -380px;
+  top: 60px;
+  width: 360px;
+  height: calc(100vh - 60px);
+  background: var(--bg-card);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+  padding: 24px;
+  overflow-y: auto;
+  transition: right 0.3s ease;
+}
+.access-panel.open {
+  right: 0;
+}
+
+.access-panel-title {
+  font-family: var(--font-heading);
+  font-size: calc(18px * var(--text-scale));
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.access-group {
+  margin-bottom: 20px;
+}
+
+.access-group-label {
+  font-size: calc(12px * var(--text-scale));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.access-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.access-option label {
+  font-size: calc(14px * var(--text-scale));
+  color: var(--text-primary);
+}
+
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--border-strong);
+  border-radius: 12px;
+  cursor: pointer;
+  border: none;
+  transition: background var(--transition);
+}
+.toggle.active {
+  background: var(--accent);
+}
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--transition);
+}
+.toggle.active::after {
+  transform: translateX(20px);
+}
+
+.text-size-control {
+  display: flex;
+  gap: 6px;
+}
+
+.text-size-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+}
+.text-size-btn.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+.text-size-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Status Bar */
+.status-notice {
+  background: var(--success-light);
+  border: 1px solid #B8D4BA;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: calc(13px * var(--text-scale));
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Consent Checkpoint */
+.checkpoint-list {
+  list-style: none;
+  margin: 12px 0;
+}
+.checkpoint-list li {
+  padding: 6px 0;
+  font-size: calc(14px * var(--text-scale));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.checkpoint-list li::before {
+  content: '•';
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* View management */
+.view { display: none; }
+.view.active { display: block; }
+
+/* Mobile Bottom Nav */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  z-index: 100;
+}
+
+.bottom-nav-list {
+  display: flex;
+  justify-content: space-around;
+  list-style: none;
+}
+
+.bottom-nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: calc(11px * var(--text-scale));
+  font-weight: 500;
+  transition: color var(--transition);
+  border: 2px solid transparent;
+}
+.bottom-nav-link.active {
+  color: var(--accent);
+}
+.bottom-nav-link:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+.bottom-nav-link svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    display: none;
+  }
+  .bottom-nav {
+    display: block;
+  }
+  .main-content {
+    padding: 20px 16px 80px;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .safety-grid {
+    grid-template-columns: 1fr;
+  }
+  .header-btn span {
+    display: none;
+  }
+  .access-panel {
+    width: 100%;
+    right: -100%;
+  }
+  .page-title {
+    font-size: calc(22px * var(--text-scale));
+  }
+}
+
+/* Focus visible */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Live region */
+[aria-live] {
+  position: relative;
+}
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Header -->
+<header class="header" role="banner">
+  <div class="header-left">
+    <a href="#" class="brand" aria-label="Hearthline home" onclick="navigateTo('home')">Hearthline</a>
+  </div>
+  <div class="header-right">
+    <button class="header-btn" onclick="toggleAccessPanel()" aria-label="Display and access settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <span>Display</span>
+    </button>
+    <button class="header-btn safety-btn" onclick="openModal('safety-modal')" aria-label="Safety and support">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Safety</span>
+    </button>
+    <button class="header-btn" onclick="openModal('help-modal')" aria-label="How this works">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5"/></svg>
+      <span>Help</span>
+    </button>
+    <button class="header-btn" onclick="navigateTo('account')" aria-label="Account settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Account</span>
+    </button>
+  </div>
+</header>
+
+<!-- App Layout -->
+<div class="app-layout">
+  <!-- Sidebar -->
+  <nav class="sidebar" role="navigation" aria-label="Primary navigation">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="#" class="nav-link active" data-view="home" onclick="navigateTo('home')" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+          Home
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-view="explore" onclick="navigateTo('explore')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Explore
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-view="connections" onclick="navigateTo('connections')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Connections
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-view="activities" onclick="navigateTo('activities')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Activities
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-view="safety" onclick="navigateTo('safety')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Safety
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-view="account" onclick="navigateTo('account')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68 1.65 1.65 0 0010 3.17V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Account
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content" id="main-content" role="main" aria-label="Main content">
+    
+    <!-- HOME VIEW -->
+    <div class="view active" id="view-home">
+      <h1 class="page-title">Your space, at your pace</h1>
+      <p class="page-subtitle">Connection on your terms. No pressure, no performance.</p>
+
+      <div class="status-notice" role="status">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+        Your privacy controls are active. Discovery is visible to people matching your preferences.
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Continue privately</h2>
+        <p class="card-description">Pick up where you left off, or adjust your boundaries.</p>
+        <div class="btn-group">
+          <button class="btn btn-secondary">Finish profile</button>
+          <button class="btn btn-secondary">Review boundaries</button>
+          <button class="btn btn-quiet">Dismiss</button>
+        </div>
+      </div>
+
+      <h2 style="font-size:calc(14px * var(--text-scale)); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin-bottom:12px;">Explore your way</h2>
+      <div class="dashboard-grid">
+        <a href="#" class="quick-action" onclick="navigateTo('explore')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Explore people
+        </a>
+        <a href="#" class="quick-action" onclick="navigateTo('activities')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+          Browse activities
+        </a>
+        <a href="#" class="quick-action" onclick="navigateTo('connections')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Start conversation
+        </a>
+        <a href="#" class="quick-action" onclick="navigateTo('account')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Review what you want
+        </a>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Your controls</h2>
+        <div class="btn-group">
+          <button class="btn btn-safety" onclick="navigateTo('safety')">Block & report</button>
+          <button class="btn btn-secondary" onclick="navigateTo('account')">Security activity</button>
+          <button class="btn btn-secondary" onclick="navigateTo('account')">Privacy center</button>
+        </div>
+      </div>
+
+      <div class="card" style="background:var(--bg-secondary); border:none;">
+        <p style="font-size:calc(14px * var(--text-scale)); color:var(--text-secondary); font-style:italic;">
+          You can skip anything here. What would you like to explore today?
+        </p>
+      </div>
+    </div>
+
+    <!-- EXPLORE VIEW -->
+    <div class="view" id="view-explore">
+      <h1 class="page-title">Explore</h1>
+      <p class="page-subtitle">Possibilities based on settings you selected. No one is ranked or scored.</p>
+
+      <div class="explore-filters" role="group" aria-label="Discovery filters">
+        <button class="filter-chip active">All intents</button>
+        <button class="filter-chip">Friendship</button>
+        <button class="filter-chip">Conversation</button>
+        <button class="filter-chip">Activities</button>
+        <button class="filter-chip">Dates</button>
+        <button class="btn btn-quiet" style="font-size:13px;">How results work →</button>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-card-header">
+          <div>
+            <div class="profile-name">Margaret</div>
+            <span class="profile-intent">Friendship · Activities</span>
+          </div>
+        </div>
+        <p style="font-size:calc(14px * var(--text-scale)); color:var(--text-secondary); margin-bottom:8px;">
+          "Looking for walking companions and book discussions. I enjoy quiet cafés and museum visits."
+        </p>
+        <div class="profile-interests">
+          <span class="interest-tag">Books</span>
+          <span class="interest-tag">Walking</span>
+          <span class="interest-tag">Museums</span>
+          <span class="interest-tag">Making things</span>
+        </div>
+        <div class="profile-pace">Text first · Public activities · Ask before calls</div>
+        <div class="profile-actions">
+          <button class="btn btn-primary" onclick="openModal('intro-modal')">Request introduction</button>
+          <button class="btn btn-secondary">Save privately</button>
+          <button class="btn btn-quiet">Hide</button>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-card-header">
+          <div>
+            <div class="profile-name">David</div>
+            <span class="profile-intent">Conversation · Community</span>
+          </div>
+        </div>
+        <p style="font-size:calc(14px * var(--text-scale)); color:var(--text-secondary); margin-bottom:8px;">
+          "Retired teacher interested in philosophy, gardening, and good conversation over coffee."
+        </p>
+        <div class="profile-interests">
+          <span class="interest-tag">Philosophy</span>
+          <span class="interest-tag">Gardening</span>
+          <span class="interest-tag">Coffee</span>
+        </div>
+        <div class="profile-pace">Text first · Slower replies · Public-first plans</div>
+        <div class="profile-actions">
+          <button class="btn btn-primary" onclick="openModal('intro-modal')">Request introduction</button>
+          <button class="btn btn-secondary">Save privately</button>
+          <button class="btn btn-quiet">Hide</button>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-card-header">
+          <div>
+            <div class="profile-name">Priya</div>
+            <span class="profile-intent">Activities · Friendship</span>
+          </div>
+        </div>
+        <p style="font-size:calc(14px * var(--text-scale)); color:var(--text-secondary); margin-bottom:8px;">
+          "New to the area. Would love to find people for weekend hikes and cooking exchanges."
+        </p>
+        <div class="profile-interests">
+          <span class="interest-tag">Hiking</span>
+          <span class="interest-tag">Cooking</span>
+          <span class="interest-tag">Photography</span>
+        </div>
+        <div class="profile-pace">Text first · Public activities · No photos early on</div>
+        <div class="profile-actions">
+          <button class="btn btn-primary" onclick="openModal('intro-modal')">Request introduction</button>
+          <button class="btn btn-secondary">Save privately</button>
+          <button class="btn btn-quiet">Hide</button>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary" style="width:100%; justify-content:center; margin-top:8px;">Load more</button>
+    </div>
+
+    <!-- CONNECTIONS VIEW -->
+    <div class="view" id="view-connections">
+      <h1 class="page-title">Connections</h1>
+      <p class="page-subtitle">Your conversations and mutual introductions.</p>
+
+      <div class="btn-group" style="margin-bottom:20px;">
+        <button class="btn btn-primary">New shared activity</button>
+        <button class="btn btn-secondary">Review pace</button>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <input type="search" placeholder="Search conversations…" style="width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius-md); font-size:calc(14px * var(--text-scale)); font-family:var(--font-body); background:var(--bg-card);" aria-label="Search conversations">
+      </div>
+
+      <div class="conversation-item" tabindex="0" role="button" aria-label="Conversation with Margaret">
+        <div class="conversation-avatar">M</div>
+        <div class="conversation-info">
+          <div class="conversation-name">Margaret</div>
+          <div class="conversation-preview">That book sounds wonderful — is it the one by…</div>
+        </div>
+        <div class="conversation-pace">Text first</div>
+      </div>
+
+      <div class="conversation-item" tabindex="0" role="button" aria-label="Conversation with David">
+        <div class="conversation-avatar" style="background:var(--sage-light); color:var(--sage);">D</div>
+        <div class="conversation-info">
+          <div class="conversation-name">David</div>
+          <div class="conversation-preview">I'd love to hear more about your garden this time of year</div>
+        </div>
+        <div class="conversation-pace">Text first</div>
+      </div>
+
+      <div class="conversation-item" tabindex="0" role="button" aria-label="Connection request from Priya">
+        <div class="conversation-avatar" style="background:var(--warning-light); color:var(--warning);">P</div>
+        <div class="conversation-info">
+          <div class="conversation-name">Priya <span style="font-size:11px; background:var(--accent-light); color:var(--accent); padding:2px 8px; border-radius:10px; margin-left:6px;">Request</span></div>
+          <div class="conversation-preview">Hi! I saw we both enjoy hiking. Would you like to connect?</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px; background:var(--bg-secondary); border:none;">
+        <p style="font-size:calc(13px * var(--text-scale)); color:var(--text-muted);">
+          A connection never creates an obligation to reply, share contact details, or meet. You can pause, leave, block, or report at any time.
+        </p>
+      </div>
+    </div>
+
+    <!-- ACTIVITIES VIEW -->
+    <div class="view" id="view-activities">
+      <h1 class="page-title">Activities</h1>
+      <p class="page-subtitle">Low-pressure ways to do something together. No pressure to meet.</p>
+
+      <div class="btn-group" style="margin-bottom:24px;">
+        <button class="btn btn-primary">Create an invitation</button>
+        <button class="btn btn-secondary">Planning checklist</button>
+      </div>
+
+      <div class="explore-filters" role="group" aria-label="Activity filters">
+        <button class="filter-chip active">All</button>
+        <button class="filter-chip">Remote</button>
+        <button class="filter-chip">In person</button>
+        <button class="filter-chip">Quiet</button>
+        <button class="filter-chip">Accessible</button>
+      </div>
+
+      <div class="activity-card">
+        <div class="activity-type">Public · In person</div>
+        <div class="activity-title">Saturday morning walk at the botanical garden</div>
+        <div class="activity-details">Broad area: Riverside district · 9–11 AM window · Quiet pace</div>
+        <div class="btn-group">
+          <button class="btn btn-primary">Express interest</button>
+          <button class="btn btn-quiet">Learn more</button>
+        </div>
+      </div>
+
+      <div class="activity-card">
+        <div class="activity-type">Remote</div>
+        <div class="activity-title">Book discussion: "A Gentleman in Moscow"</div>
+        <div class="activity-details">Text-based · Flexible timing · All welcome</div>
+        <div class="btn-group">
+          <button class="btn btn-primary">Express interest</button>
+          <button class="btn btn-quiet">Learn more</button>
+        </div>
+      </div>
+
+      <div class="activity-card">
+        <div class="activity-type">Public · In person</div>
+        <div class="activity-title">Coffee and conversation at Elm Street Café</div>
+        <div class="activity-details">Broad area: Downtown · Afternoon window · Accessible venue</div>
+        <div class="btn-group">
+          <button class="btn btn-primary">Express interest</button>
+          <button class="btn btn-quiet">Learn more</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAFETY VIEW -->
+    <div class="view" id="view-safety">
+      <h1 class="page-title">Safety & account controls</h1>
+      <p class="page-subtitle">You are always in control. These actions are never penalized.</p>
+
+      <h2 style="font-size:calc(13px * var(--text-scale)); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin-bottom:12px;">Immediate controls</h2>
+      <div class="safety-grid">
+        <button class="safety-action" onclick="openModal('block-modal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          Block someone
+        </button>
+        <button class="safety-action" onclick="openModal('report-modal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          Report conduct
+        </button>
+        <button class="safety-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          Mute notifications
+        </button>
+        <button class="safety-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Leave conversation
+        </button>
+      </div>
+
+      <h2 style="font-size:calc(13px * var(--text-scale)); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin:24px 0 12px;">Your reports & appeals</h2>
+      <div class="card">
+        <p style="font-size:calc(14px * var(--text-scale)); color:var(--text-secondary);">No active reports or appeals.</p>
+        <button class="btn btn-secondary" style="margin-top:12px;">View history</button>
+      </div>
+
+      <h2 style="font-size:calc(13px * var(--text-scale)); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin:24px 0 12px;">Account security</h2>
+      <div class="card">
+        <div class="account-item">
+          <div>
+            <div class="account-item-label">Security activity</div>
+            <div class="account-item-desc">Passkey added · 2 days ago</div>
+          </div>
+          <button class="btn btn-quiet">Review</button>
+        </div>
+        <div class="account-item">
+          <div>
+            <div class="account-item-label">Manage passkeys</div>
+            <div class="account-item-desc">2 sign-in methods</div>
+          </div>
+          <button class="btn btn-quiet">Manage</button>
+        </div>
+        <div class="account-item">
+          <div>
+            <div class="account-item-label">Sign out everywhere</div>
+            <div class="account-item-desc">End all active sessions</div>
+          </div>
+          <button class="btn btn-quiet">Sign out</button>
+        </div>
+        <div class="account-item">
+          <div>
+            <div class="account-item-label">Recovery options</div>
+            <div class="account-item-desc">Review your recovery methods</div>
+          </div>
+          <button class="btn btn-quiet">Review</button>
+        </div>
+      </div>
+
+      <h2 style="font-size:calc(13px * var(--text-scale)); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin:24px 0 12px;">Your rights</h2>
+      <div class="card">
+        <div class="account-item">
+          <div><div class="account-item-label">Export my data</div></div>
+          <button class="btn btn-secondary">Request</button>
+        </div>
+        <div class="account-item">
+          <div><div class="account-item-label">Correct my data</div></div>
+          <button class="btn btn-secondary">Review</button>
+        </div>
+        <div class="account-item">
+          <div><div class="account-item-label">Pause account</div></div>
+          <button class="btn btn-secondary">Pause</button>
+        </div>
+        <div class="account-item">
+          <div><div class="account-item-label">Delete account</div></div>
+          <button class="btn btn-destructive">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT VIEW -->
+    <div class="view" id="view-account">
+      <h1 class="page-title">Account</h1>
+      <p class="page-subtitle">Your profile, consent, privacy, and data — all under your control.</p>
+
+      <div class="account-section">
+        <div class="account-section-title">Profile & sharing</div>
+        <div class="card">
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Edit profile</div>
+              <div class="account-item-desc">Display name, introduction, interests</div>
+            </div>
+            <button class="btn btn-quiet">Edit</button>
+          </div>
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Consent & sharing</div>
+              <div class="account-item-desc">Control who sees what, and for how long</div>
+            </div>
+            <button class="btn btn-quiet">Manage</button>
+          </div>
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Pause discovery</div>
+              <div class="account-item-desc">Hide your profile from Explore</div>
+            </div>
+            <button class="btn btn-secondary">Pause</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="account-section">
+        <div class="account-section-title">Sign-in & continuity</div>
+        <div class="card">
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Manage passkeys</div>
+              <div class="account-item-desc">Daily sign-in · Backup passkey</div>
+            </div>
+            <button class="btn btn-quiet">Manage</button>
+          </div>
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Recovery options</div>
+              <div class="account-item-desc">Independent backup methods</div>
+            </div>
+            <button class="btn btn-quiet">Review</button>
+          </div>
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Sign out everywhere</div>
+            </div>
+            <button class="btn btn-quiet">Sign out</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="account-section">
+        <div class="account-section-title">Privacy & data</div>
+        <div class="card">
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Privacy center</div>
+              <div class="account-item-desc">What Hearthline uses — and what it doesn't</div>
+            </div>
+            <button class="btn btn-quiet">View</button>
+          </div>
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Export my data</div>
+            </div>
+            <button class="btn btn-secondary">Request</button>
+          </div>
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Delete my data</div>
+            </div>
+            <button class="btn btn-destructive">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="account-section">
+        <div class="account-section-title">Access & comfort</div>
+        <div class="card">
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Display & access</div>
+              <div class="account-item-desc">Text size, contrast, motion, sensory</div>
+            </div>
+            <button class="btn btn-quiet" onclick="toggleAccessPanel()">Adjust</button>
+          </div>
+          <div class="account-item">
+            <div>
+              <div class="account-item-label">Notification settings</div>
+              <div class="account-item-desc">Quiet mode, digest schedule</div>
+            </div>
+            <button class="btn btn-quiet">Manage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="bottom-nav" role="navigation" aria-label="Mobile navigation">
+  <ul class="bottom-nav-list">
+    <li><a href="#" class="bottom-nav-link active" data-view="home" onclick="navigateTo('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      Home
+    </a></li>
+    <li><a href="#" class="bottom-nav-link" data-view="explore" onclick="navigateTo('explore')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Explore
+    </a></li>
+    <li><a href="#" class="bottom-nav-link" data-view="connections" onclick="navigateTo('connections')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Connections
+    </a></li>
+    <li><a href="#" class="bottom-nav-link" data-view="safety" onclick="navigateTo('safety')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Safety
+    </a></li>
+  </ul>
+</nav>
+
+<!-- Accessibility Panel -->
+<aside class="access-panel" id="access-panel" role="complementary" aria-label="Display and access settings">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 class="access-panel-title">Display & access</h2>
+    <button class="btn btn-quiet" onclick="toggleAccessPanel()" aria-label="Close display settings">✕</button>
+  </div>
+
+  <div class="access-group">
+    <div class="access-group-label">Text size</div>
+    <div class="text-size-control">
+      <button class="text-size-btn" onclick="setTextScale(0.9)" aria-label="Small text">A</button>
+      <button class="text-size-btn active" onclick="setTextScale(1)" aria-label="Medium text">A</button>
+      <button class="text-size-btn" onclick="setTextScale(1.15)" aria-label="Large text" style="font-size:16px;">A</button>
+      <button class="text-size-btn" onclick="setTextScale(1.3)" aria-label="Extra large text" style="font-size:18px;">A</button>
+    </div>
+  </div>
+
+  <div class="access-group">
+    <div class="access-group-label">Contrast</div>
+    <div class="access-option">
+      <label>High contrast</label>
+      <button class="toggle" role="switch" aria-checked="false" onclick="toggleHighContrast(this)" aria-label="Toggle high contrast"></button>
+    </div>
+  </div>
+
+  <div class="access-group">
+    <div class="access-group-label">Motion & sensory</div>
+    <div class="access-option">
+      <label>Reduced motion</label>
+      <button class="toggle" role="switch" aria-checked="false" onclick="toggleReducedMotion(this)" aria-label="Toggle reduced motion"></button>
+    </div>
+    <div class="access-option">
+      <label>Low-stimulation mode</label>
+      <button class="toggle" role="switch" aria-checked="false" onclick="this.classList.toggle('active'); this.setAttribute('aria-checked', this.classList.contains('active'))" aria-label="Toggle low stimulation mode"></button>
+    </div>
+  </div>
+
+  <div class="access-group">
+    <div class="access-group-label">Navigation</div>
+    <div class="access-option">
+      <label>Keyboard-first controls</label>
+      <button class="toggle" role="switch" aria-checked="false" onclick="this.classList.toggle('active'); this.setAttribute('aria-checked', this.classList.contains('active'))" aria-label="Toggle keyboard first controls"></button>
+    </div>
+    <div class="access-option">
+      <label>Screen-reader labels</label>
+      <button class="toggle" role="switch" aria-checked="false" onclick="this.classList.toggle('active'); this.setAttribute('aria-checked', this.classList.contains('active'))" aria-label="Toggle screen reader optimized labels"></button>
+    </div>
+    <div class="access-option">
+      <label>Plain-language mode</label>
+      <button class="toggle" role="switch" aria-checked="false" onclick="this.classList.toggle('active'); this.setAttribute('aria-checked', this.classList.contains('active'))" aria-label="Toggle plain language mode"></button>
+    </div>
+  </div>
+
+  <div class="access-group">
+    <div class="access-group-label">Media</div>
+    <div class="access-option">
+      <label>Captions by default</label>
+      <button class="toggle" role="switch" aria-checked="false" onclick="this.classList.toggle('active'); this.setAttribute('aria-checked', this.classList.contains('active'))" aria-label="Toggle captions by default"></button>
+    </div>
+    <div class="access-option">
+      <label>No camera by default</label>
+      <button class="toggle active" role="switch" aria-checked="true" onclick="this.classList.toggle('active'); this.setAttribute('aria-checked', this.classList.contains('active'))" aria-label="Toggle no camera by default"></button>
+    </div>
+  </div>
+
+  <div class="btn-group" style="margin-top:20px;">
+    <button class="btn btn-primary">Save</button>
+    <button class="btn btn-quiet">Reset to defaults</button>
+  </div>
+</aside>
+
+<!-- Modals -->
+
+<!-- Consent Checkpoint Modal -->
+<div class="modal-overlay" id="intro-modal" role="dialog" aria-modal="true" aria-labelledby="intro-modal-title">
+  <div class="modal">
+    <h2 class="modal-title" id="intro-modal-title">Confirm before sending</h2>
+    <div class="modal-body">
+      <p>You are about to request an introduction. They can decline, ignore, or change their mind at any time.</p>
+      <ul class="checkpoint-list">
+        <li><strong>Intent shared:</strong> Friendship</li>
+        <li><strong>Pace shared:</strong> Text first, public activities</li>
+        <li><strong>Message:</strong> Your written note</li>
+      </ul>
+      <p style="margin-top:12px; font-size:calc(13px * var(--text-scale)); color:var(--text-muted);">
+        This does not obligate a response. You can withdraw at any time.
+      </p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('intro-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('intro-modal')">Send request</button>
+    </div>
+  </div>
+</div>
+
+<!-- Safety Modal -->
+<div class="modal-overlay" id="safety-modal" role="dialog" aria-modal="true" aria-labelledby="safety-modal-title">
+  <div class="modal">
+    <h2 class="modal-title" id="safety-modal-title">Safety & support</h2>
+    <div class="modal-body">
+      <p>You can take action at any time. These choices are private and do not notify others.</p>
+      <div class="btn-group" style="flex-direction:column; margin-top:16px;">
+        <button class="btn btn-safety" onclick="closeModal('safety-modal'); navigateTo('safety')">Block someone</button>
+        <button class="btn btn-safety" onclick="closeModal('safety-modal'); navigateTo('safety')">Report content or conduct</button>
+        <button class="btn btn-secondary" onclick="closeModal('safety-modal'); navigateTo('safety')">Leave a conversation</button>
+        <button class="btn btn-secondary" onclick="closeModal('safety-modal'); navigateTo('safety')">Appeal a decision</button>
+        <button class="btn btn-quiet" onclick="closeModal('safety-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Block Modal -->
+<div class="modal-overlay" id="block-modal" role="dialog" aria-modal="true" aria-labelledby="block-modal-title">
+  <div class="modal">
+    <h2 class="modal-title" id="block-modal-title">Block this person?</h2>
+    <div class="modal-body">
+      <p>Blocking stops new platform contact according to your settings. They will not receive a reason from you.</p>
+      <p style="margin-top:12px; font-size:calc(13px * var(--text-scale)); color:var(--text-muted);">You can also optionally remove the conversation or report specific conduct.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('block-modal')">Cancel</button>
+      <button class="btn btn-destructive" onclick="closeModal('block-modal')">Block</button>
+    </div>
+  </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal-overlay" id="report-modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+  <div class="modal">
+    <h2 class="modal-title" id="report-modal-title">Report content or conduct</h2>
+    <div class="modal-body">
+      <p>What are you reporting?</p>
+      <div style="margin:12px 0; display:flex; flex-direction:column; gap:8px;">
+        <label style="display:flex; align-items:center; gap:8px; font-size:calc(14px * var(--text-scale)); cursor:pointer;">
+          <input type="radio" name="report-type"> Harassment or unwanted contact
+        </label>
+        <label style="display:flex; align-items:center; gap:8px; font-size:calc(14px * var(--text-scale)); cursor:pointer;">
+          <input type="radio" name="report-type"> Threat or intimidation
+        </label>
+        <label style="display:flex; align-items:center; gap:8px; font-size:calc(14px * var(--text-scale)); cursor:pointer;">
+          <input type="radio" name="report-type"> Scam or financial request
+        </label>
+        <label style="display:flex; align-items:center; gap:8px; font-size:calc(14px * var(--text-scale)); cursor:pointer;">
+          <input type="radio" name="report-type"> Impersonation
+        </label>
+        <label style="display:flex; align-items:center; gap:8px; font-size:calc(14px * var(--text-scale)); cursor:pointer;">
+          <input type="radio" name="report-type"> Other concern
+        </label>
+      </div>
+      <p style="font-size:calc(13px * var(--text-scale)); color:var(--text-muted); margin-top:8px;">
+        Your report includes only the content you select. No explanation is required.
+      </p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('report-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('report-modal')">Submit report</button>
+    </div>
+  </div>
+</div>
+
+<!-- Help Modal -->
+<div class="modal-overlay" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+  <div class="modal">
+    <h2 class="modal-title" id="help-modal-title">How Hearthline works</h2>
+    <div class="modal-body">
+      <p>Hearthline is a private, low-pressure space for adults 30+ to explore friendship, conversation, activities, and community.</p>
+      <ul class="checkpoint-list">
+        <li>You control what you share, with whom, and for how long</li>
+        <li>No one is ranked, scored, or sorted by desirability</li>
+        <li>Every outward action requires your confirmation</li>
+        <li>You can block, report, or leave at any time</li>
+        <li>Your device, passkey type, or access needs are never shown to others</li>
+      </ul>
+      <p style="margin-top:12px; font-size:calc(13px * var(--text-scale)); color:var(--text-muted);">
+        This page explains the data practices for your current view.
+      </p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeModal('help-modal')">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Live region for announcements -->
+<div aria-live="polite" aria-atomic="true" class="sr-only" id="live-region"></div>
+
+<script>
+// Navigation
+function navigateTo(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  
+  document.querySelectorAll('.nav-link').forEach(l => {
+    l.classList.remove('active');
+    l.removeAttribute('aria-current');
+  });
+  const activeLink = document.querySelector(`.nav-link[data-view="${view}"]`);
+  if (activeLink) {
+    activeLink.classList.add('active');
+    activeLink.setAttribute('aria-current', 'page');
+  }
+
+  document.querySelectorAll('.bottom-nav-link').forEach(l => l.classList.remove('active'));
+  const activeBottom = document.querySelector(`.bottom-nav-link[data-view="${view}"]`);
+  if (activeBottom) activeBottom.classList.add('active');
+
+  // Announce to screen readers
+  const titles = { home: 'Home', explore: 'Explore', connections: 'Connections', activities: 'Activities', safety: 'Safety and account controls', account: 'Account' };
+  document.getElementById('live-region').textContent = titles[view] + ' page loaded';
+  
+  window.scrollTo(0, 0);
+  return false;
+}
+
+// Modals
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  document.getElementById(id).querySelector('.modal').focus();
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+// Close modal on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(m => {
+      m.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+    const panel = document.getElementById('access-panel');
+    if (panel.classList.contains('open')) {
+      panel.classList.remove('open');
+    }
+  }
+});
+
+// Accessibility Panel
+function toggleAccessPanel() {
+  const panel = document.getElementById('access-panel');
+  panel.classList.toggle('open');
+}
+
+// Text scale
+function setTextScale(scale) {
+  document.documentElement.style.setProperty('--text-scale', scale);
+  document.querySelectorAll('.text-size-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// High contrast
+function toggleHighContrast(btn) {
+  btn.classList.toggle('active');
+  const isActive = btn.classList.contains('active');
+  btn.setAttribute('aria-checked', isActive);
+  if (isActive) {
+    document.documentElement.setAttribute('data-theme', 'high-contrast');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+}
+
+// Reduced motion
+function toggleReducedMotion(btn) {
+  btn.classList.toggle('active');
+  const isActive = btn.classList.contains('active');
+  btn.setAttribute('aria-checked', isActive);
+  if (isActive) {
+    document.documentElement.setAttribute('data-motion', 'reduced');
+  } else {
+    document.documentElement.removeAttribute('data-motion');
+  }
+}
+
+// Filter chips
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.parentElement.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
